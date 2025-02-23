@@ -1,5 +1,4 @@
 import { createContext, useEffect, useState } from "react";
-import { Navigate, useNavigate } from "react-router";
 import { getMyData } from "../api/userApi";
 
 const UserContext = createContext(null);
@@ -9,10 +8,11 @@ export const UserProvider = ({ children }) => {
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
+    
     if (token) {
       getMyData()
         .then((res) => {
-          setUser(res.data);
+          setUser(res);
         })
         .catch(() => logoutUser());
     }
@@ -22,12 +22,8 @@ export const UserProvider = ({ children }) => {
     try {
       sessionStorage.setItem("token", token);
 
-      // const response = await getMyData();
-      // setUser(response);
-
-      setUser({
-        username: "test",
-      });
+      const response = await getMyData();
+      setUser(response);
 
       return true;
     } catch (error) {

@@ -24,7 +24,6 @@ import {
   ShoppingBag,
   MessageCircle,
   User,
-  CreditCard,
   Inbox,
   ChevronRight,
   LogOut,
@@ -32,6 +31,8 @@ import {
 import { Link, useLocation } from "react-router";
 import { SidebarMenuBadge } from "../ui/sidebar";
 import logo from "../../assets/images/logo.svg"
+import { useContext } from "react";
+import UserContext from "../../context/UserContext";
 
 const menuItems = {
   header: [{ title: "คำขอ", url: "/inbox", icon: Inbox }],
@@ -57,6 +58,7 @@ const menuItems = {
 
 const AppSidebar = () => {
   const location = useLocation().pathname;
+  const { user } = useContext(UserContext);
 
   return (
     <Sidebar>
@@ -133,7 +135,8 @@ const AppSidebar = () => {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
-                  <User size={32} color="#5B5471" /> Username
+                  <User size={32} color="#5B5471" />
+                  {user.username}
                   <ChevronRight className="ml-auto" size={32} color="#5B5471" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>

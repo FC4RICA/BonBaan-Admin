@@ -2,12 +2,13 @@ import { LoginForm } from "../components/forms/userForm";
 import { useActionData, useLoaderData, useNavigate, useSubmit } from "react-router";
 import { useContext, useEffect } from "react";
 import UserContext from "../context/UserContext";
-import { getMyData, login } from "../api/userApi";
+import { login } from "../api/userApi";
 
 export const loginLoader = async () => {
+  console.log("LOADER");
   try {
-    const response = await getMyData()
-    return response
+    const token = sessionStorage.getItem("token")
+    return { token }
   } catch (error) {
     return null
   }
@@ -22,7 +23,7 @@ export const loginAction = async ({ request }) => {
 
   try {
     const response = await login(body);
-    return response;
+    return response
   } catch (error) {
     return { error: "Invalid credentials" };
   }
@@ -35,8 +36,8 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (result) {
-      setUserData(result);
+    if (result && result.token) {
+      setUserData(result.token);
       navigate("/home");
     }
   }, [result, navigate]);
