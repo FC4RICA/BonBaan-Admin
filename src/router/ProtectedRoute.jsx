@@ -1,12 +1,14 @@
 import { useContext } from "react";
-import { Navigate, Outlet } from "react-router";
+import { Navigate, Outlet, useNavigate } from "react-router";
 import UserContext from "../context/UserContext";
 
 const ProtectedRoute = () => {
-  const context = useContext(UserContext);
-  if(!context.user) {
+  const { context, user } = useContext(UserContext);
+
+  if(!user) {
     return <Navigate to={"/"} replace/>
   }
+
   return <Outlet context={context}/>;
 };
 
