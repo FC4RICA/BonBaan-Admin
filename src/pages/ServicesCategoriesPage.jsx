@@ -24,43 +24,45 @@ import {
   EditCategoryForm,
 } from "../components/forms/categoryForm";
 import { DeleteConfirmationAlert } from "../components/shared/alert";
-
-// TODO: get data from api
-
-const response = {
-  data: [
-    {
-      id: "1234",
-      name: "Test",
-      count: 0,
-      lastUpdateAt: Date.now(),
-    },
-    {
-      id: "1235",
-      name: "Test2",
-      count: 0,
-      lastUpdateAt: Date.now(),
-    },
-  ],
-  totalPage: 1,
-  currentPage: 1,
-  totalRecord: 4,
-  pageSize: 4,
-};
+import { useCategories } from "../routes/categoriesRoute";
+import { useSubmit } from "react-router";
 
 const ServicesCategoriesPage = () => {
+  const result = useCategories();
   const [page, setPage] = useState(1);
   const [editedRow, setEditedRow] = useState("");
 
-  const deleteCategory = (id) => {
-    console.log("DELETE:", id);
-  }
+  const submit = useSubmit();
+  const onCreateCategory = (value) => {
+    const formData = new FormData();
+    formData.append("intent", "create");
+    formData.append("name", value.name);
+
+    submit(formData, { method: "post", action: "/services/categories" });
+  };
+
+  const onUpdateCategory = (id, value) => {
+    const formData = new FormData();
+    formData.append("intent", "update");
+    formData.append("id", id);
+    formData.append("name", value.name);
+
+    submit(formData, { method: "post", action: "/services/categories" });
+  };
+
+  const onDeleteCategory = (id) => {
+    const formData = new FormData();
+    formData.append("intent", "delete");
+    formData.append("id", id);
+
+    submit(formData, { method: "post", action: "/services/categories" });
+  };
 
   return (
     <div className="flex gap-8">
       <div className="flex flex-col w-96 gap-8">
         <h3>เพิ่มหมวดหมู่ใหม่</h3>
-        <CreateCategoryForm />
+        <CreateCategoryForm onSubmit={onCreateCategory} />
       </div>
       <div className="flex flex-col gap-2 w-full ">
         <Table>
@@ -72,7 +74,7 @@ const ServicesCategoriesPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {response.data.map((row, index) => (
+            {result.categories.map((row, index) => (
               <TableRow key={row.id}>
                 {editedRow === index ? (
                   <TableFormCell
@@ -81,6 +83,7 @@ const ServicesCategoriesPage = () => {
                     form={
                       <EditCategoryForm
                         name={row.name}
+                        onSubmit={(value) => onUpdateCategory(row.id, value)}
                         onCancel={() => setEditedRow("")}
                       />
                     }
@@ -94,7 +97,10 @@ const ServicesCategoriesPage = () => {
                       >
                         แก้ไข
                       </button>
-                      <DeleteConfirmationAlert title={row.name} onConfirm={() => deleteCategory(row.id)}/>
+                      <DeleteConfirmationAlert
+                        title={row.name}
+                        onConfirm={() => onDeleteCategory(row.id)}
+                      />
                     </TableActionCell>
                     <TableCell>{row.count}</TableCell>
                     <TableCell>{row.lastUpdateAt}</TableCell>
@@ -104,7 +110,7 @@ const ServicesCategoriesPage = () => {
             ))}
           </TableBody>
         </Table>
-        <div className="flex justify-between">
+        {/* <div className="flex justify-between">
           <div className="flex items-center text-sm text-[--gray]">
             แสดง {response.data.length} จากทั้งหมด {response.totalRecord}
           </div>
@@ -139,7 +145,7 @@ const ServicesCategoriesPage = () => {
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        </div>
+        </div> */}
       </div>
     </div>
   );
