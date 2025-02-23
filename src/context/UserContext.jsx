@@ -5,16 +5,18 @@ const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = sessionStorage.getItem("token");
-    
+
     if (token) {
       getMyData()
-        .then((res) => {
-          setUser(res);
-        })
-        .catch(() => logoutUser());
+        .then((res) => setUser(res))
+        .catch(() => logoutUser())
+        .finally(() => setLoading(false)); // Mark loading false after fetch
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -38,7 +40,7 @@ export const UserProvider = ({ children }) => {
   };
 
   return (
-    <UserContext.Provider value={{ user, setUserData, logoutUser }}>
+    <UserContext.Provider value={{ user, setUserData, logoutUser, loading }}>
       {children}
     </UserContext.Provider>
   );

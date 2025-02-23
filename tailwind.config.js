@@ -20,6 +20,7 @@ export default {
           "--p": "48.23% 0.2694 285.02",
           "--fallback-pc": "#ffffff",
           "--fallback-er": "#DE3D3D",
+          "--fallback-b1": "#f3f4f6",
           "--gray": "#5B5471",
           "--primary": "#5e17eb",
           ".input-bordered": {
