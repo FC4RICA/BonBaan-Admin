@@ -1,11 +1,16 @@
 import { LoginForm } from "../components/forms/userForm";
-import { useActionData, useNavigate, useSubmit } from "react-router";
+import { useActionData, useLoaderData, useNavigate, useSubmit } from "react-router";
 import { useContext, useEffect } from "react";
 import UserContext from "../context/UserContext";
-import { login } from "../api/userApi";
+import { getMyData, login } from "../api/userApi";
 
 export const loginLoader = async () => {
-  
+  try {
+    const response = await getMyData()
+    return response
+  } catch (error) {
+    return null
+  }
 }
 
 export const loginAction = async ({ request }) => {
@@ -16,7 +21,7 @@ export const loginAction = async ({ request }) => {
   }
 
   try {
-    const response = login(body);
+    const response = await login(body);
     return response;
   } catch (error) {
     return { error: "Invalid credentials" };
@@ -25,13 +30,13 @@ export const loginAction = async ({ request }) => {
 
 const LoginPage = () => {
   const submit = useSubmit();
-  const result = useActionData();
+  const result = useActionData() || useLoaderData();
   const { setUserData } = useContext(UserContext);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (result) {
-      setUserData(result.token);
+      setUserData(result);
       navigate("/home");
     }
   }, [result, navigate]);

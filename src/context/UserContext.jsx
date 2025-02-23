@@ -18,7 +18,7 @@ export const UserProvider = ({ children }) => {
     }
   }, []);
 
-  const setUserData = async ({ token }) => {
+  const setUserData = async (token) => {
     try {
       sessionStorage.setItem("token", token);
 
