@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router";
 import Layout from "../components/layout/Layout";
 import HomePage from "../pages/HomePage";
-import LoginPage, { loginAction, loginLoader } from "../pages/LoginPage";
+import LoginPage from "../pages/LoginPage";
 import ProtectedRoute from "./ProtectedRoute";
 import ServicesPage from "../pages/ServicesPage";
 import InsertServicePage from "../pages/InsertServicePage";
@@ -16,6 +16,7 @@ import EditServicePage from "../pages/EditServicePage";
 import { OrderID, ServiceID } from "./param-ids";
 import { serviceAction, serviceLoader } from "../routes/editServiceRoute";
 import OrderPage from "../pages/OrderPage";
+import { loginAction, loginLoader } from "../routes/loginRoute";
 
 const router = createBrowserRouter([
   {

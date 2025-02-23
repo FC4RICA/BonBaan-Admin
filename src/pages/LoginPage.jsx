@@ -1,37 +1,12 @@
 import { LoginForm } from "../components/forms/userForm";
-import { useActionData, useLoaderData, useNavigate, useSubmit } from "react-router";
+import { useNavigate, useSubmit } from "react-router";
 import { useContext, useEffect } from "react";
 import UserContext from "../context/UserContext";
-import { login } from "../api/userApi";
-
-export const loginLoader = async () => {
-  console.log("LOADER");
-  try {
-    const token = sessionStorage.getItem("token")
-    return { token }
-  } catch (error) {
-    return null
-  }
-}
-
-export const loginAction = async ({ request }) => {
-  const data = await request.formData();
-  const body = {
-    emailOrUsername: data.get("username"),
-    password: data.get("password")
-  }
-
-  try {
-    const response = await login(body);
-    return response
-  } catch (error) {
-    return { error: "Invalid credentials" };
-  }
-}
+import { useLogin } from "../routes/loginRoute";
 
 const LoginPage = () => {
   const submit = useSubmit();
-  const result = useActionData() || useLoaderData();
+  const result = useLogin();
   const { setUserData } = useContext(UserContext);
   const navigate = useNavigate();
 
