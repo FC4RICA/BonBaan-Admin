@@ -1,7 +1,7 @@
-import { createBrowserRouter, useMatch } from "react-router";
+import { createBrowserRouter } from "react-router";
 import Layout from "../components/layout/Layout";
 import HomePage from "../pages/HomePage";
-import LoginPage from "../pages/LoginPage";
+import LoginPage, { loginAction, loginLoader } from "../pages/LoginPage";
 import ProtectedRoute from "./ProtectedRoute";
 import ServicesPage from "../pages/ServicesPage";
 import InsertServicePage from "../pages/InsertServicePage";
@@ -21,6 +21,8 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <LoginPage />,
+    action: loginAction,
+    loader: loginLoader
   },
   {
     path: "/logout",

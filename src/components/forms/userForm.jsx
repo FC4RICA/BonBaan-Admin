@@ -25,7 +25,6 @@ const LoginForm = ({ onSubmit }) => {
     if (onSubmit) {
       onSubmit(values);
     }
-    console.log(values);
   };
 
   return (
