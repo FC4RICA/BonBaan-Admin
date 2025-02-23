@@ -17,6 +17,7 @@ import { OrderID, ServiceID } from "./param-ids";
 import { serviceAction, serviceLoader } from "../routes/editServiceRoute";
 import OrderPage from "../pages/OrderPage";
 import { loginAction, loginLoader } from "../routes/loginRoute";
+import { categoriesAction, categoriesLoader } from "../routes/categoriesRoute";
 
 const router = createBrowserRouter([
   {
@@ -97,6 +98,8 @@ const router = createBrowserRouter([
               {
                 path: "/services/categories",
                 element: <ServicesCategoriesPage />,
+                loader: categoriesLoader,
+                action: categoriesAction,
                 handle: {
                   crumb: () => "หมวดหมู่",
                 },

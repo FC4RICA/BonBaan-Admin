@@ -24,8 +24,6 @@ const CreateCategoryForm = ({ onSubmit }) => {
     if (onSubmit) {
       onSubmit(values)
     }
-    console.log(values);
-    // call api
   };
 
   return (
@@ -62,8 +60,6 @@ const EditCategoryForm = ({ name, onCancel, onSubmit }) => {
     if (onSubmit) {
       onSubmit(values)
     }
-    console.log(values);
-    // call api
   };
 
   return (
