@@ -7,19 +7,20 @@ const packageSchema = z.object({
     .number()
     .positive({ message: "ราคาต้องเป็นจำนวนเต็มบวก" })
     .int({ message: "ราคาต้องเป็นจำนวนเต็มบวก" }),
+  type: z.string().nonempty({ message: "กรุณาเลือกประเภทของแพ็กเกจ" }),
   description: z.string().nonempty({ message: "กรุณากำหนดคำอธิบายแพ็กเกจ" }),
 });
 
 const imageSchema = z.union([
   z.string().url({ message: "รูปภาพต้องเป็น URL ที่ถูกต้อง" }), // Existing images (URLs)
-  z.instanceof(File)
-  .refine(
-    (file) => ACCEPTED_IMAGE_TYPES.includes(file.type), 
-    { message: "รองรับเฉพาะไฟล์ JPG, PNG, และ WEBP เท่านั้น" }
-  ).refine(
-    (file) => file.size <= MAX_IMAGE_SIZE, 
-    { message: `ขนาดไฟล์ต้องไม่เกิน ${MAX_IMAGE_SIZE / (1024 * 1024)}MB` }
-  )
+  z
+    .instanceof(File)
+    .refine((file) => ACCEPTED_IMAGE_TYPES.includes(file.type), {
+      message: "รองรับเฉพาะไฟล์ JPG, PNG, และ WEBP เท่านั้น",
+    })
+    .refine((file) => file.size <= MAX_IMAGE_SIZE, {
+      message: `ขนาดไฟล์ต้องไม่เกิน ${MAX_IMAGE_SIZE / (1024 * 1024)}MB`,
+    }),
 ]);
 
 const serviceSchema = z.object({

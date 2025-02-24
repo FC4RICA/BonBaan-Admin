@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { serviceSchema, imageSchema } from "../../schemas/serviceSchema";
+import { serviceSchema } from "../../schemas/serviceSchema";
 import { useFieldArray, useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import {
@@ -16,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash, X } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const categories = [
   {
@@ -32,11 +33,22 @@ const categories = [
   },
 ];
 
+const types = [
+  {
+    id: "1",
+    name: "บนบาน",
+  },
+  {
+    id: "2",
+    name: "แก้บน",
+  },
+];
+
 const defaultServiceValues = {
   name: "",
   description: "",
   location: "",
-  packages: [{ name: "", price: "", description: "" }],
+  packages: [{ name: "", price: "", type: "1", description: "" }],
   customable: false,
   images: [],
   categories: [],
@@ -385,6 +397,35 @@ const PackageForm = ({ index, form, remove, fields }) => {
                 <FormLabel>ราคา</FormLabel>
                 <FormControl>
                   <Input placeholder="ราคา" type="number" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name={`packages.${index}.type`}
+            render={({ field }) => (
+              <FormItem className="min-w-24">
+                <FormLabel>ประเภท</FormLabel>
+                <FormControl>
+                  <RadioGroup
+                    onValueChange={field.onChange}
+                    defaultValue={types[0].id}
+                    className="flex flex-col gap-1.5"
+                  >
+                    {types.map((item) => (
+                      <FormItem key={item.id} className="flex items-center space-x-3 space-y-0">
+                        <FormControl>
+                          <RadioGroupItem value={item.id} />
+                        </FormControl>
+                        <FormLabel className="font-normal">
+                          {item.name}
+                        </FormLabel>
+                      </FormItem>
+                    ))}
+                  </RadioGroup>
                 </FormControl>
                 <FormMessage />
               </FormItem>
