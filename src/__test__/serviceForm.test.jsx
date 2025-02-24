@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import "@testing-library/jest-dom";
 import { CreateServiceForm } from "../components/forms/serviceForm";
+import { any, string } from "zod";
 
 beforeAll(() => {
   global.URL.createObjectURL = vi.fn(() => "mock-url");
@@ -31,6 +32,8 @@ describe("CreateServiceForm - Render", () => {
     const checkboxes = screen.getAllByRole("checkbox");
     expect(checkboxes.length).greaterThanOrEqual(2);
     expect(screen.getByTestId("service-images")).toBeInTheDocument();
+    expect(screen.getByText("ประเภท")).toBeInTheDocument();
+    expect(screen.getAllByRole("radio").length).equal(2);
   });
 
   it("submits correctly when valid values are provided", async () => {
@@ -110,6 +113,7 @@ describe("CreateServiceForm - Render", () => {
             name: "Package name",
             price: 100,
             description: "This is a valid description.",
+            type: expect.any(String)
           },
         ],
         customable: true,
