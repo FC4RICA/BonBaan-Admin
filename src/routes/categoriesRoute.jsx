@@ -1,19 +1,26 @@
 import { useActionData, useLoaderData } from "react-router";
-import { createCategory, deleteCategory, getCategories, getCategoryServiceCount, updateCategory } from "../api/categoryApi";
+import {
+  createCategory,
+  deleteCategory,
+  getCategories,
+  getCategoryServiceCount,
+  updateCategory,
+} from "../api/categoryApi";
 
 export const categoriesLoader = async () => {
-  console.log("LOADER");
-  
   const response = await getCategories();
-  response.data.forEach(async category => {
-    category.Count = await getCategoryServiceCount(category.ID)
-  });
-  return response.data || [];
+
+  const categories = await Promise.all(
+    response.data.map(async (category) => ({
+      ...category,
+      Count: await getCategoryServiceCount(category.ID),
+      UpdatedAt: new Date(category.UpdatedAt).toLocaleString(),
+    }))
+  );
+  return categories || [];
 };
 
 export const categoriesAction = async ({ request }) => {
-  console.log("ACTION");
-  
   const formData = await request.formData();
   const intent = formData.get("intent");
 
@@ -24,7 +31,7 @@ export const categoriesAction = async ({ request }) => {
     if (intent === "create") {
       const name = formData.get("name");
       console.log(name);
-      
+
       await createCategory({ name });
     } else if (intent === "update") {
       const id = formData.get("id");
