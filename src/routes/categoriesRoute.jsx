@@ -1,11 +1,14 @@
 import { useActionData, useLoaderData } from "react-router";
-import { createCategory, deleteCategory, getCategories, updateCategory } from "../api/categoryApi";
+import { createCategory, deleteCategory, getCategories, getCategoryServiceCount, updateCategory } from "../api/categoryApi";
 
-export const categoriesLoader = () => {
+export const categoriesLoader = async () => {
   console.log("LOADER");
   
-  const response = getCategories();
-  return response;
+  const response = await getCategories();
+  response.data.forEach(async category => {
+    category.Count = await getCategoryServiceCount(category.ID)
+  });
+  return response.data || [];
 };
 
 export const categoriesAction = async ({ request }) => {

@@ -31,7 +31,7 @@ const ServicesCategoriesPage = () => {
   const result = useCategories();
   const [page, setPage] = useState(1);
   const [editedRow, setEditedRow] = useState("");
-
+  
   const submit = useSubmit();
   const onCreateCategory = (value) => {
     const formData = new FormData();
@@ -74,8 +74,8 @@ const ServicesCategoriesPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {result.categories.map((row, index) => (
-              <TableRow key={row.id}>
+            {result.map((row, index) => (
+              <TableRow key={row.ID}>
                 {editedRow === index ? (
                   <TableFormCell
                     colSpan={3}
@@ -83,7 +83,7 @@ const ServicesCategoriesPage = () => {
                     form={
                       <EditCategoryForm
                         name={row.name}
-                        onSubmit={(value) => onUpdateCategory(row.id, value)}
+                        onSubmit={(value) => onUpdateCategory(row.ID, value)}
                         onCancel={() => setEditedRow("")}
                       />
                     }
@@ -99,11 +99,11 @@ const ServicesCategoriesPage = () => {
                       </button>
                       <DeleteConfirmationAlert
                         title={row.name}
-                        onConfirm={() => onDeleteCategory(row.id)}
+                        onConfirm={() => onDeleteCategory(row.ID)}
                       />
                     </TableActionCell>
-                    <TableCell>{row.count}</TableCell>
-                    <TableCell>{row.lastUpdateAt}</TableCell>
+                    <TableCell>{row.Count}</TableCell>
+                    <TableCell>{row.UpdatedAt}</TableCell>
                   </>
                 )}
               </TableRow>
