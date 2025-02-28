@@ -20,10 +20,13 @@ const CreateCategoryForm = ({ onSubmit }) => {
     },
   });
 
+  const { reset } = form;
+
   const handelSubmit = (values) => {
     if (onSubmit) {
       onSubmit(values)
     }
+    reset()
   };
 
   return (
@@ -60,6 +63,7 @@ const EditCategoryForm = ({ name, onCancel, onSubmit }) => {
     if (onSubmit) {
       onSubmit(values)
     }
+    onCancel()
   };
 
   return (

@@ -27,11 +27,14 @@ import { DeleteConfirmationAlert } from "../components/shared/alert";
 import { useCategories } from "../routes/categoriesRoute";
 import { useSubmit } from "react-router";
 
+const PAGE_SIZE = 20;
+
 const ServicesCategoriesPage = () => {
   const result = useCategories();
   const [page, setPage] = useState(1);
+  const totalPage = Math.ceil(result.length / PAGE_SIZE)
   const [editedRow, setEditedRow] = useState("");
-
+  
   const submit = useSubmit();
   const onCreateCategory = (value) => {
     const formData = new FormData();
@@ -74,8 +77,8 @@ const ServicesCategoriesPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {result.categories.map((row, index) => (
-              <TableRow key={row.id}>
+            {result.map((row, index) => (
+              <TableRow key={row.ID}>
                 {editedRow === index ? (
                   <TableFormCell
                     colSpan={3}
@@ -83,7 +86,7 @@ const ServicesCategoriesPage = () => {
                     form={
                       <EditCategoryForm
                         name={row.name}
-                        onSubmit={(value) => onUpdateCategory(row.id, value)}
+                        onSubmit={(value) => onUpdateCategory(row.ID, value)}
                         onCancel={() => setEditedRow("")}
                       />
                     }
@@ -99,31 +102,31 @@ const ServicesCategoriesPage = () => {
                       </button>
                       <DeleteConfirmationAlert
                         title={row.name}
-                        onConfirm={() => onDeleteCategory(row.id)}
+                        onConfirm={() => onDeleteCategory(row.ID)}
                       />
                     </TableActionCell>
-                    <TableCell>{row.count}</TableCell>
-                    <TableCell>{row.lastUpdateAt}</TableCell>
+                    <TableCell>{row.Count}</TableCell>
+                    <TableCell>{row.UpdatedAt}</TableCell>
                   </>
                 )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
-        {/* <div className="flex justify-between">
+        <div className="flex justify-between">
           <div className="flex items-center text-sm text-[--gray]">
-            แสดง {response.data.length} จากทั้งหมด {response.totalRecord}
+            แสดง {result.length} จากทั้งหมด {result.length}
           </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationFirst
-                  isActive={response.currentPage === 1 ? false : true}
+                  isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationPrevious
-                  isActive={response.currentPage === 1 ? false : true}
+                  isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
@@ -132,20 +135,20 @@ const ServicesCategoriesPage = () => {
               <PaginationItem>
                 <PaginationNext
                   isActive={
-                    response.currentPage === response.totalPage ? false : true
+                    page === totalPage ? false : true
                   }
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationLast
                   isActive={
-                    response.currentPage === response.totalPage ? false : true
+                    page === totalPage ? false : true
                   }
                 />
               </PaginationItem>
             </PaginationContent>
           </Pagination>
-        </div> */}
+        </div>
       </div>
     </div>
   );
