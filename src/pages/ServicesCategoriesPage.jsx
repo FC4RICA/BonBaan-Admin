@@ -32,7 +32,7 @@ const PAGE_SIZE = 20;
 const ServicesCategoriesPage = () => {
   const result = useCategories();
   const [page, setPage] = useState(1);
-  const totalPage = Math.ceil(result.length / PAGE_SIZE)
+  const totalPage = Math.ceil(result.length / PAGE_SIZE) || 1;
   const [editedRow, setEditedRow] = useState("");
   
   const submit = useSubmit();
