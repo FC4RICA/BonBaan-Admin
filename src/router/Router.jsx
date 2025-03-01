@@ -19,6 +19,7 @@ import OrderPage from "../pages/OrderPage";
 import { loginAction, loginLoader } from "../routes/loginRoute";
 import { categoriesAction, categoriesLoader } from "../routes/categoriesRoute";
 import { usersLoader } from "../routes/usersRoute";
+import { insertServiceAction, insertSrviceLoader } from "../routes/insertServiceRoute";
 
 const router = createBrowserRouter([
   {
@@ -92,6 +93,8 @@ const router = createBrowserRouter([
               {
                 path: "/services/insert",
                 element: <InsertServicePage />,
+                loader: insertSrviceLoader,
+                action: insertServiceAction,
                 handle: {
                   crumb: () => "สร้างบริการใหม่",
                 },

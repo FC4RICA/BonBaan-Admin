@@ -18,32 +18,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash, X } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-const categories = [
-  {
-    id: "1",
-    name: "ความรัก",
-  },
-  {
-    id: "2",
-    name: "สุขภาพ",
-  },
-  {
-    id: "3",
-    name: "การเงิน",
-  },
-];
-
-const types = [
-  {
-    id: "1",
-    name: "บนบาน",
-  },
-  {
-    id: "2",
-    name: "แก้บน",
-  },
-];
-
 const defaultServiceValues = {
   name: "",
   description: "",
@@ -58,6 +32,8 @@ const CreateServiceForm = ({
   defaultValues = defaultServiceValues,
   submitButtonLabel = "เพิ่มบริการใหม่", // Default for create
   onSubmit,
+  categories = [],
+  types = []
 }) => {
   const form = useForm({
     resolver: zodResolver(serviceSchema),
@@ -171,6 +147,7 @@ const CreateServiceForm = ({
               <div className="space-y-4">
                 {fields.map((item, index) => (
                   <PackageForm
+                    types={types}
                     index={index}
                     form={form}
                     remove={remove}
@@ -308,27 +285,27 @@ const CreateServiceForm = ({
                   <FormItem>
                     {categories.map((category) => (
                       <FormField
-                        key={category.id}
+                        key={category.ID}
                         control={form.control}
                         name="categories"
                         render={({ field }) => {
                           return (
                             <FormItem
-                              key={category.id}
+                              key={category.ID}
                               className="flex flex-row items-center space-x-3 space-y-0"
                             >
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value?.includes(category.id)}
+                                  checked={field.value?.includes(category.ID)}
                                   onCheckedChange={(checked) => {
                                     return checked
                                       ? field.onChange([
                                           ...field.value,
-                                          category.id,
+                                          category.ID,
                                         ])
                                       : field.onChange(
                                           field.value?.filter(
-                                            (value) => value !== category.id
+                                            (value) => value !== category.ID
                                           )
                                         );
                                   }}
@@ -368,7 +345,7 @@ const CreateServiceForm = ({
   );
 };
 
-const PackageForm = ({ index, form, remove, fields }) => {
+const PackageForm = ({ index, form, remove, fields, types }) => {
   return (
     <>
       <div className="flex flex-col items-stretch gap-4 border border-[--border] bg-neutral-50 p-3 rounded-md">
@@ -412,13 +389,16 @@ const PackageForm = ({ index, form, remove, fields }) => {
                 <FormControl>
                   <RadioGroup
                     onValueChange={field.onChange}
-                    defaultValue={types[0].id}
+                    defaultValue={types[0].ID}
                     className="flex flex-col gap-1.5"
                   >
                     {types.map((item) => (
-                      <FormItem key={item.id} className="flex items-center space-x-3 space-y-0">
+                      <FormItem
+                        key={item.ID}
+                        className="flex items-center space-x-3 space-y-0"
+                      >
                         <FormControl>
-                          <RadioGroupItem value={item.id} />
+                          <RadioGroupItem value={item.ID} />
                         </FormControl>
                         <FormLabel className="font-normal">
                           {item.name}
