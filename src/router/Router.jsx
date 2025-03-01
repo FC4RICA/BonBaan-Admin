@@ -18,6 +18,7 @@ import { serviceAction, serviceLoader } from "../routes/editServiceRoute";
 import OrderPage from "../pages/OrderPage";
 import { loginAction, loginLoader } from "../routes/loginRoute";
 import { categoriesAction, categoriesLoader } from "../routes/categoriesRoute";
+import { usersLoader } from "../routes/usersRoute";
 
 const router = createBrowserRouter([
   {
@@ -123,6 +124,7 @@ const router = createBrowserRouter([
           {
             path: "/users",
             element: <UsersPage />,
+            loader: usersLoader,
             handle: {
               crumb: () => "ผู้ใช้",
             },

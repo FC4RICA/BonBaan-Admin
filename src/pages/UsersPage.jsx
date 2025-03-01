@@ -17,6 +17,7 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 import { useState } from "react";
+import { useUsers } from "../routes/usersRoute";
 
 const usersData = {
   data: [
@@ -37,7 +38,8 @@ const usersData = {
 };
 
 const UsersPage = () => {
-    const [page, setPage] = useState(1);
+  const result = useUsers();
+  const [page, setPage] = useState(1);
 
   return (
     <div className="flex flex-col gap-4">
@@ -55,20 +57,20 @@ const UsersPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {usersData.data.map((item, index) => (
+            {result.map((item, index) => (
               <TableRow key={index}>
                 <TableCell>{item.username}</TableCell>
-                <TableCell>{item.name}</TableCell>
+                <TableCell>{item.firstname + " " + item.lastname}</TableCell>
                 <TableCell>{item.email}</TableCell>
                 <TableCell>{item.orders}</TableCell>
                 <TableCell>{item.totalSpend}</TableCell>
-                <TableCell>{item.createdAt}</TableCell>
+                <TableCell>{item.CreatedAt}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
         <div className="flex justify-between">
-          <div className="flex items-center text-sm text-[--gray]">
+          {/* <div className="flex items-center text-sm text-[--gray]">
             แสดง {usersData.data.length} จากทั้งหมด {usersData.totalRecord}
           </div>
           <Pagination>
@@ -105,7 +107,7 @@ const UsersPage = () => {
                 />
               </PaginationItem>
             </PaginationContent>
-          </Pagination>
+          </Pagination> */}
         </div>
       </div>
     </div>
