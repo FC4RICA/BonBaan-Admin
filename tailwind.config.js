@@ -51,7 +51,7 @@ export default {
           },
           ".file-input-md": {
             "height": "2.5rem"
-          }
+          },
         },
       },
     ],
