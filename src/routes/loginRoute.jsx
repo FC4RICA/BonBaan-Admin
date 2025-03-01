@@ -21,7 +21,7 @@ export const loginAction = async ({ request }) => {
     const response = await login(body);
     return response
   } catch (error) {
-    return { error: "Invalid credentials" };
+    return { error: "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง" };
   }
 }
 

@@ -12,9 +12,11 @@ export const UserProvider = ({ children }) => {
 
     if (token) {
       getMyData()
-        .then((res) => setUser(res))
+        .then((res) => {
+          user || setUser(res.data)
+        })
         .catch(() => logoutUser())
-        .finally(() => setLoading(false)); // Mark loading false after fetch
+        .finally(() => setLoading(false));
     } else {
       setLoading(false);
     }
@@ -25,9 +27,10 @@ export const UserProvider = ({ children }) => {
       sessionStorage.setItem("token", token);
 
       const response = await getMyData();
-      setUser(response);
-
+      if (response.data) {
+        setUser(response.data);
       return true;
+      }
     } catch (error) {
       console.error("Login failed:", error);
       return false;
