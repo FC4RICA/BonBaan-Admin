@@ -24,13 +24,9 @@ export const categoriesAction = async ({ request }) => {
   const formData = await request.formData();
   const intent = formData.get("intent");
 
-  console.log(formData);
-  console.log(intent);
-
   try {
     if (intent === "create") {
       const name = formData.get("name");
-      console.log(name);
 
       await createCategory({ name });
     } else if (intent === "update") {
