@@ -31,7 +31,7 @@ const UsersPage = () => {
     const start = PAGE_SIZE * (page - 1);
     const end = start + PAGE_SIZE;
     setPageData(result.slice(start, end));
-  }, [page]);
+  }, [page, result]);
 
   return (
     <div className="flex flex-col gap-4">

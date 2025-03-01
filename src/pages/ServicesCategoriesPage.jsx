@@ -18,7 +18,7 @@ import {
   PaginationLast,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   CreateCategoryForm,
   EditCategoryForm,
@@ -27,14 +27,23 @@ import { DeleteConfirmationAlert } from "../components/shared/alert";
 import { useCategories } from "../routes/categoriesRoute";
 import { useSubmit } from "react-router";
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 8;
 
 const ServicesCategoriesPage = () => {
   const result = useCategories();
+
   const [page, setPage] = useState(1);
   const totalPage = Math.ceil(result.length / PAGE_SIZE) || 1;
+  const [pageData, setPageData] = useState([]);
+
+  useEffect(() => {
+    const start = PAGE_SIZE * (page - 1);
+    const end = start + PAGE_SIZE;
+    setPageData(result.slice(start, end));
+  }, [page, result]);
+
   const [editedRow, setEditedRow] = useState("");
-  
+
   const submit = useSubmit();
   const onCreateCategory = (value) => {
     const formData = new FormData();
@@ -77,7 +86,7 @@ const ServicesCategoriesPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {result.map((row, index) => (
+            {pageData.map((row, index) => (
               <TableRow key={row.ID}>
                 {editedRow === index ? (
                   <TableFormCell
@@ -115,17 +124,19 @@ const ServicesCategoriesPage = () => {
         </Table>
         <div className="flex justify-between">
           <div className="flex items-center text-sm text-[--gray]">
-            แสดง {result.length} จากทั้งหมด {result.length}
+            แสดง {pageData.length} จากทั้งหมด {result.length}
           </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationFirst
+                  onClick={() => setPage(1)}
                   isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationPrevious
+                  onClick={() => setPage((prev) => prev - 1)}
                   isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
@@ -134,16 +145,14 @@ const ServicesCategoriesPage = () => {
               </PaginationItem>
               <PaginationItem>
                 <PaginationNext
-                  isActive={
-                    page === totalPage ? false : true
-                  }
+                  onClick={() => setPage((prev) => prev + 1)}
+                  isActive={page === totalPage ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationLast
-                  isActive={
-                    page === totalPage ? false : true
-                  }
+                  onClick={() => setPage(totalPage)}
+                  isActive={page === totalPage ? false : true}
                 />
               </PaginationItem>
             </PaginationContent>
