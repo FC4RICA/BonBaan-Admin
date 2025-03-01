@@ -16,30 +16,22 @@ import {
   PaginationLast,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useUsers } from "../routes/usersRoute";
 
-const usersData = {
-  data: [
-    {
-      id: "1",
-      username: "supppppp",
-      name: "ชาญ ชาลาล่า",
-      email: "chacha@gmail.com",
-      orders: 3,
-      totalSpend: 9000,
-      createdAt: new Date(Date.now()).toLocaleString(),
-    },
-  ],
-  totalPage: 1,
-  currentPage: 1,
-  totalRecord: 1,
-  pageSize: 4,
-};
+const PAGE_SIZE = 10;
 
 const UsersPage = () => {
   const result = useUsers();
   const [page, setPage] = useState(1);
+  const totalPage = Math.ceil(result.length / PAGE_SIZE) || 1;
+  const [pageData, setPageData] = useState([]);
+
+  useEffect(() => {
+    const start = PAGE_SIZE * (page - 1);
+    const end = start + PAGE_SIZE;
+    setPageData(result.slice(start, end));
+  }, [page]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -53,11 +45,11 @@ const UsersPage = () => {
               <TableHead>อีเมล</TableHead>
               <TableHead>จำนวนการซื้อ</TableHead>
               <TableHead>ยอดการซื้อ</TableHead>
-              <TableHead className="w-48" >วันที่สมัครสมาชิก</TableHead>
+              <TableHead className="w-48">วันที่สมัครสมาชิก</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {result.map((item, index) => (
+            {pageData.map((item, index) => (
               <TableRow key={index}>
                 <TableCell>{item.username}</TableCell>
                 <TableCell>{item.firstname + " " + item.lastname}</TableCell>
@@ -70,19 +62,21 @@ const UsersPage = () => {
           </TableBody>
         </Table>
         <div className="flex justify-between">
-          {/* <div className="flex items-center text-sm text-[--gray]">
-            แสดง {usersData.data.length} จากทั้งหมด {usersData.totalRecord}
+          <div className="flex items-center text-sm text-[--gray]">
+            แสดง {pageData.length} จากทั้งหมด {result.length}
           </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationFirst
-                  isActive={usersData.currentPage === 1 ? false : true}
+                  onClick={() => setPage(1)}
+                  isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationPrevious
-                  isActive={usersData.currentPage === 1 ? false : true}
+                  onClick={() => setPage((prev) => prev - 1)}
+                  isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
@@ -90,24 +84,18 @@ const UsersPage = () => {
               </PaginationItem>
               <PaginationItem>
                 <PaginationNext
-                  isActive={
-                    usersData.currentPage === usersData.totalPage
-                      ? false
-                      : true
-                  }
+                  onClick={() => setPage((prev) => prev + 1)}
+                  isActive={page === totalPage ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationLast
-                  isActive={
-                    usersData.currentPage === usersData.totalPage
-                      ? false
-                      : true
-                  }
+                  onClick={() => setPage(totalPage)}
+                  isActive={page === totalPage ? false : true}
                 />
               </PaginationItem>
             </PaginationContent>
-          </Pagination> */}
+          </Pagination>
         </div>
       </div>
     </div>

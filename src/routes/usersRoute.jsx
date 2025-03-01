@@ -4,7 +4,7 @@ import { getUsers } from "../api/userApi";
 export const usersLoader = async () => {
   const response = await getUsers();
   const users = response.data
-    .filter((user) => user.Role.role.toLowerCase() === "admin")
+    .filter((user) => user.Role.role.toLowerCase() === "user")
     .map((user) => ({
       ...user,
       CreatedAt: new Date(user.CreatedAt).toLocaleString(),
