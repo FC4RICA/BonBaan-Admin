@@ -33,7 +33,7 @@ const CreateServiceForm = ({
   submitButtonLabel = "เพิ่มบริการใหม่", // Default for create
   onSubmit,
   categories = [],
-  types = []
+  types = [],
 }) => {
   const form = useForm({
     resolver: zodResolver(serviceSchema),
@@ -387,25 +387,27 @@ const PackageForm = ({ index, form, remove, fields, types }) => {
               <FormItem className="min-w-24">
                 <FormLabel>ประเภท</FormLabel>
                 <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={types[0].ID}
-                    className="flex flex-col gap-1.5"
-                  >
-                    {types.map((item) => (
-                      <FormItem
-                        key={item.ID}
-                        className="flex items-center space-x-3 space-y-0"
-                      >
-                        <FormControl>
-                          <RadioGroupItem value={item.ID} />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          {item.name}
-                        </FormLabel>
-                      </FormItem>
-                    ))}
-                  </RadioGroup>
+                  {types.length > 0 ? (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={types[0].ID}
+                      className="flex flex-col gap-1.5"
+                    >
+                      {types.map((item) => (
+                        <FormItem
+                          key={item.ID}
+                          className="flex items-center space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <RadioGroupItem value={item.ID} />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            {item.name}
+                          </FormLabel>
+                        </FormItem>
+                      ))}
+                    </RadioGroup>
+                  ) : null}
                 </FormControl>
                 <FormMessage />
               </FormItem>
