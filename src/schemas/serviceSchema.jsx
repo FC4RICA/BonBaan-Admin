@@ -30,7 +30,7 @@ const serviceSchema = z.object({
   description: z.string().nonempty({
     message: "กรุณากำหนดคำอธิบายของบริการ",
   }),
-  location: z.string().nonempty({
+  address: z.string().nonempty({
     message: "กรุณากำหนดสถานที่ของบริการ",
   }),
   packages: z

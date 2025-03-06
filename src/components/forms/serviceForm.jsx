@@ -21,7 +21,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 const defaultServiceValues = {
   name: "",
   description: "",
-  location: "",
+  address: "",
   packages: [{ name: "", price: "", type: "1", description: "" }],
   customable: false,
   images: [],
@@ -96,7 +96,11 @@ const CreateServiceForm = ({
 
     Object.keys(values).forEach((key) => {
       if (key !== "images") {
-        formData.append(key, values[key]);
+        if (key === "packages" || key === "categories") {
+          formData.append(key, JSON.stringify(values[key]));
+        } else {
+          formData.append(key, values[key]);
+        }
       }
     });
 
@@ -104,7 +108,6 @@ const CreateServiceForm = ({
       onSubmit(values);
     }
     console.log(values);
-    // call api
   };
 
   return (
@@ -323,11 +326,11 @@ const CreateServiceForm = ({
               />
             </CollapsibleInput>
 
-            {/* Service Location */}
+            {/* Service Address */}
             <CollapsibleInput header="สถานที่">
               <FormField
                 control={form.control}
-                name="location"
+                name="address"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormControl>
