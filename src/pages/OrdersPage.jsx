@@ -31,29 +31,6 @@ import {
 import { useOrders } from "../routes/OrdersRoute";
 import { Button } from "../components/ui/button"
 
-const ordersData = {
-  data: [
-    {
-      id: "9e1c2987",
-      service: {
-        name: "พระตรีมูรติ",
-      },
-      type: "บนบาน",
-      name: "ชาญ ชาลาล่า",
-      price: 300,
-      status: {
-        id: "1",
-        name: "กำลังดำเนินการ",
-      },
-      createdAt: new Date(Date.now()).toLocaleString(),
-    },
-  ],
-  totalPage: 1,
-  currentPage: 1,
-  totalRecord: 1,
-  pageSize: 4,
-};
-
 const OrdersPage = () => {
   const result = useOrders();
   const pagination = result.data.pagination;
