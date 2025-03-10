@@ -28,87 +28,16 @@ import {
   SelectLabel,
   SelectGroup
 } from "@/components/ui/select";
-
-const ordersData = {
-  data: [
-    {
-      id: "9e1c2987",
-      service: {
-        name: "พระตรีมูรติ",
-      },
-      type: "บนบาน",
-      name: "ชาญ ชาลาล่า",
-      price: 300,
-      status: {
-        id: "1",
-        name: "กำลังดำเนินการ",
-      },
-      createdAt: new Date(Date.now()).toLocaleString(),
-    },
-  ],
-  totalPage: 1,
-  currentPage: 1,
-  totalRecord: 1,
-  pageSize: 4,
-};
-
-const statusData = {
-  status: [
-    {
-      id: "2",
-      name: "รอรับออเดอร์",
-    },
-    {
-      id: "3",
-      name: "กำลังดำเนินการ",
-    },
-    {
-      id: "4",
-      name: "รอการยืนยัน",
-    },
-    {
-      id: "5",
-      name: "สำเร็จ",
-    },
-    {
-      id: "6",
-      name: "ยกเลิก",
-    },
-  ],
-};
-
-const typesData = {
-  types: [
-    {
-      id: "1",
-      name: "บนบาน",
-    },
-    {
-      id: "2",
-      name: "แก้บน",
-    }
-  ],
-};
-
-const packagesData = {
-  packages: [
-    {
-      id: "1",
-      name: "แพ็กเกจ",
-    },
-    {
-      id: "2",
-      name: "คำสั่งซื้อพิเศษ",
-    }
-  ],
-};
+import { useOrders } from "../routes/OrdersRoute";
+import { Button } from "../components/ui/button"
 
 const OrdersPage = () => {
-  const [page, setPage] = useState(1);
-
+  const result = useOrders();
+  const pagination = result.data.pagination;
+  
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex gap-4">
+      <div className="flex gap-4 items-center">
       {/* สถานะคำสั่งซื้อ */}
         <Select>
           <SelectTrigger className="w-[180px]">
@@ -117,46 +46,20 @@ const OrdersPage = () => {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>สถานะคำสั่งซื้อ</SelectLabel>
-              {statusData.status.map((item) => (
-                <SelectItem key={item.id} value={item.id}>
+              {result.statuses.map((item) => (
+                <SelectItem key={item.ID} value={item.ID}>
                   {item.name}
                 </SelectItem>
               ))}
             </SelectGroup>
           </SelectContent>
         </Select>
-        {/* หมวดหมู่ */}
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="หมวดหมู่" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>หมวดหมู่</SelectLabel>
-              {typesData.types.map((item) => (
-                <SelectItem key={item.id} value={item.id}>
-                  {item.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        {/* ประเภทคำสั่งซื้อ */}
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="ประเภทคำสั่งซื้อ" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>ประเภทคำสั่งซื้อ</SelectLabel>
-              {packagesData.packages.map((item) => (
-                <SelectItem key={item.id} value={item.id}>
-                  {item.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
+        <Button size="sm">
+          ฟิลเตอร์
+        </Button>
+        <Button size="sm" variant="destructive">
+          ยกเลิก
+        </Button>
       </div>
       <div className="flex flex-col gap-2">
         <Table>
@@ -172,44 +75,44 @@ const OrdersPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {ordersData.data.map((row, index) => (
-              <TableRow key={index}>
-                <TableActionCell title={row.id}>
-                  <EditLink to={`/orders/${row.id}`} />
+            {result.data.orders.map((row, index) => (
+              <TableRow key={row.ID}>
+                <TableActionCell title={row.ID}>
+                  <EditLink to={`/orders/${row.ID}`} />
                 </TableActionCell>
-                <TableCell>{row.service.name}</TableCell>
-                <TableCell>{row.type}</TableCell>
-                <TableCell>{row.name}</TableCell>
-                <TableCell>{row.price}</TableCell>
-                <TableCell>{row.status.name}</TableCell>
-                <TableCell>{row.createdAt}</TableCell>
+                <TableCell>{row.Service.name}</TableCell>
+                <TableCell>{row.Type.name}</TableCell>
+                <TableCell>{row.User.firstname + " " + row.User.lastname}</TableCell>
+                <TableCell>{row.orderDetail?.price}</TableCell>
+                <TableCell>{row.Status.name}</TableCell>
+                <TableCell>{row.CreatedAt}</TableCell>
               </TableRow>
             ))}
           </TableBody>
         </Table>
         <div className="flex justify-between">
           <div className="flex items-center text-sm text-[--gray]">
-            แสดง {ordersData.data.length} จากทั้งหมด {ordersData.totalRecord}
+            แสดง {result.data.orders.length} จากทั้งหมด {pagination.totalRecords}
           </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationFirst
-                  isActive={ordersData.currentPage === 1 ? false : true}
+                  isActive={pagination.currentPage === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationPrevious
-                  isActive={ordersData.currentPage === 1 ? false : true}
+                  isActive={pagination.currentPage === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink size="sm">{page}</PaginationLink>
+                <PaginationLink size="sm">{pagination.currentPage}</PaginationLink>
               </PaginationItem>
               <PaginationItem>
                 <PaginationNext
                   isActive={
-                    ordersData.currentPage === ordersData.totalPage
+                    (pagination.currentPage === pagination.totalPages || pagination.totalPages <= 0)
                       ? false
                       : true
                   }
@@ -218,7 +121,7 @@ const OrdersPage = () => {
               <PaginationItem>
                 <PaginationLast
                   isActive={
-                    ordersData.currentPage === ordersData.totalPage
+                    (pagination.currentPage === pagination.totalPages || pagination.totalPages <= 0)
                       ? false
                       : true
                   }

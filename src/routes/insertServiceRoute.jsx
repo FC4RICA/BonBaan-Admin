@@ -1,6 +1,6 @@
 import { useActionData, useLoaderData } from "react-router";
 import { getCategories } from "../api/categoryApi";
-import { getOrderType } from "../api/orderTypeApi";
+import { getOrderType } from "../api/orderApi";
 import { createService } from "../api/serviceApi";
 
 export const insertSrviceLoader = async () => {
