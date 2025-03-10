@@ -3,12 +3,10 @@ import { getOrders, getOrderStatuses, getOrderType } from "../api/orderApi";
 
 export const ordersLoader = async () => {
   const statuses = await getOrderStatuses();
-  const types = await getOrderType();
 
   const ordersData = await getOrders();
   return {
     statuses: statuses.data,
-    types: types.data,
     data: ordersData.data,
   };
 };

@@ -54,44 +54,12 @@ const OrdersPage = () => {
             </SelectGroup>
           </SelectContent>
         </Select>
-        {/* หมวดหมู่ */}
-        <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="หมวดหมู่" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>หมวดหมู่</SelectLabel>
-              {result.types.map((item) => (
-                <SelectItem key={item.ID} value={item.ID}>
-                  {item.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
         <Button size="sm">
           ฟิลเตอร์
         </Button>
         <Button size="sm" variant="destructive">
           ยกเลิก
         </Button>
-        {/* ประเภทคำสั่งซื้อ */}
-        {/* <Select>
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="ประเภทคำสั่งซื้อ" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectLabel>ประเภทคำสั่งซื้อ</SelectLabel>
-              {packagesData.packages.map((item) => (
-                <SelectItem key={item.id} value={item.id}>
-                  {item.name}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select> */}
       </div>
       <div className="flex flex-col gap-2">
         <Table>
