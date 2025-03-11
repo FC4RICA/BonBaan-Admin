@@ -19,112 +19,31 @@ import {
 } from "@/components/ui/pagination";
 import { EditLink } from "../components/shared/link";
 import { Plus } from "lucide-react";
-import { Link } from "react-router";
-import { useState } from "react";
+import { Link, useSubmit } from "react-router";
+import { useEffect, useState } from "react";
 import { DeleteConfirmationAlert } from "../components/shared/alert";
-
-// TODO: get data from api
-// TODO: sorting and filtering
-
-const response = {
-  data: [
-    {
-      id: "e24d56a2-152d-4053-988d-dcaadeec966f",
-      img: "https://picsum.photos/seed/1/200/200",
-      title: "test",
-      rating: 3.92,
-      categories: [
-        {
-          id: "1",
-          name: "ความรัก",
-        },
-        {
-          id: "2",
-          name: "สุขภาพ",
-        },
-        {
-          id: "3",
-          name: "การเงิน",
-        },
-      ],
-      lastUpdateAt: new Date(Date.now()).toLocaleString(),
-    },
-    {
-      id: "52a2adb6-1a90-44eb-aacb-4d7af9d76791",
-      img: "https://picsum.photos/seed/2/200/200",
-      title: "test",
-      rating: 4.1,
-      categories: [
-        {
-          id: "1",
-          name: "ความรัก",
-        },
-        {
-          id: "2",
-          name: "สุขภาพ",
-        },
-        {
-          id: "3",
-          name: "การเงิน",
-        },
-      ],
-      lastUpdateAt: new Date(Date.now()).toLocaleString(),
-    },
-    {
-      id: "db7aedd1-6c64-4ea3-b48c-5f1bf47ef309",
-      img: "https://picsum.photos/seed/3/200/200",
-      title: "test",
-      rating: 2.5,
-      categories: [
-        {
-          id: "1",
-          name: "ความรัก",
-        },
-        {
-          id: "2",
-          name: "สุขภาพ",
-        },
-        {
-          id: "3",
-          name: "การเงิน",
-        },
-      ],
-      lastUpdateAt: new Date(Date.now()).toLocaleString(),
-    },
-    {
-      id: "a774aa3f-e382-4661-9867-e76a13262c7c",
-      img: "https://picsum.photos/seed/4/200/200",
-      title: "test",
-      rating: 4.6,
-      categories: [
-        {
-          id: "1",
-          name: "ความรัก",
-        },
-        {
-          id: "2",
-          name: "สุขภาพ",
-        },
-        {
-          id: "3",
-          name: "การเงิน",
-        },
-      ],
-      lastUpdateAt: new Date(Date.now()).toLocaleString(),
-    },
-  ],
-  totalPage: 2,
-  currentPage: 1,
-  totalRecord: 8,
-  pageSize: 4,
-};
+import { useServices } from "../routes/servicesRoute";
+import { getServices } from "../api/serviceApi";
 
 const ServicesPage = () => {
+  const { services: initialServices, pagination } = useServices();
+  const [services, setServices] = useState(initialServices);
   const [page, setPage] = useState(1);
 
+  useEffect(() => {
+    if (page === 1) return; // skip first page
+
+    getCurrentServicesPage();
+  }, [page]);
+
+  const getCurrentServicesPage = async () => {
+    const response = await getServices({ currentPage: page });
+    setServices(response.data.data.services);
+  };
+
+  const submit = useSubmit();
   const deleteService = (id) => {
-    console.log("DELETE:", id);
-    // call DELETE API
+    submit(id, {method: "POST"})
   };
 
   return (
@@ -147,45 +66,52 @@ const ServicesPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {response.data.map((row, index) => (
+            {services.length > 0 ? services.map((row, index) => (
               <TableRow key={index}>
                 <TableCell>
                   <img
-                    src={row.img}
+                    src={row.attachments[0].url}
                     alt=""
                     className="aspect-square object-cover h-fit"
                   />
                 </TableCell>
-                <TableActionCell title={row.title}>
+                <TableActionCell title={row.name}>
                   <EditLink to={`/services/${row.id}`} />
                   <DeleteConfirmationAlert
-                    title={row.title}
+                    title={row.name}
                     onConfirm={() => deleteService(row.id)}
                   />
                 </TableActionCell>
-                <TableCell> 
+                <TableCell>
                   {row.categories.map((item) => item.name).join(" ")}
                 </TableCell>
-                <TableCell>{row.rating}</TableCell>
-                <TableCell>{row.lastUpdateAt}</TableCell>
+                <TableCell>{row.rate}</TableCell>
+                <TableCell>{row.UpdatedAt}</TableCell>
               </TableRow>
-            ))}
+            )) : 
+            <TableRow>
+              <TableCell colSpan="5">
+                ไม่พบข้อมูลบริการ
+              </TableCell>
+            </TableRow>}
           </TableBody>
         </Table>
         <div className="flex justify-between">
           <div className="flex items-center text-sm text-[--gray]">
-            แสดง {response.data.length} จากทั้งหมด {response.totalRecord}
+            แสดง {services.length} จากทั้งหมด {pagination.totalRecords}
           </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationFirst
-                  isActive={response.currentPage === 1 ? false : true}
+                  onClick={() => setPage(1)}
+                  isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationPrevious
-                  isActive={response.currentPage === 1 ? false : true}
+                  onClick={() => setPage((prev) => prev - 1)}
+                  isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
@@ -193,16 +119,14 @@ const ServicesPage = () => {
               </PaginationItem>
               <PaginationItem>
                 <PaginationNext
-                  isActive={
-                    response.currentPage === response.totalPage ? false : true
-                  }
+                  onClick={() => setPage((prev) => prev + 1)}
+                  isActive={page >= pagination.totalPages ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationLast
-                  isActive={
-                    response.currentPage === response.totalPage ? false : true
-                  }
+                  onClick={() => setPage(pagination.totalPages)}
+                  isActive={page >= pagination.totalPages ? false : true}
                 />
               </PaginationItem>
             </PaginationContent>

@@ -21,6 +21,7 @@ import { categoriesAction, categoriesLoader } from "../routes/categoriesRoute";
 import { usersLoader } from "../routes/usersRoute";
 import { insertServiceAction, insertSrviceLoader } from "../routes/insertServiceRoute";
 import { ordersAction, ordersLoader } from "../routes/OrdersRoute";
+import { servicesAction, servicesLoader } from "../routes/servicesRoute";
 
 const router = createBrowserRouter([
   {
@@ -83,6 +84,8 @@ const router = createBrowserRouter([
               {
                 index: true,
                 element: <ServicesPage />,
+                loader: servicesLoader,
+                action: servicesAction
               },
               {
                 path: "/services/:id",
