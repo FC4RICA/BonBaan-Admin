@@ -23,6 +23,7 @@ import { insertServiceAction, insertSrviceLoader } from "../routes/insertService
 import { ordersAction, ordersLoader } from "../routes/OrdersRoute";
 import { servicesAction, servicesLoader } from "../routes/servicesRoute";
 import ErrorPage from "../pages/ErrorPage";
+import { inboxAction, inboxLoader } from "../routes/inboxRoute";
 
 const router = createBrowserRouter([
   {
@@ -53,6 +54,8 @@ const router = createBrowserRouter([
           {
             path: "/inbox",
             element: <InboxPage />,
+            loader: inboxLoader,
+            action: inboxAction,
             handle: {
               crumb: () => "คำขอ",
             },
