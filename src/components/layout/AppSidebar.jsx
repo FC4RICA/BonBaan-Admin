@@ -31,8 +31,9 @@ import {
 import { Link, useLocation } from "react-router";
 import { SidebarMenuBadge } from "../ui/sidebar";
 import logo from "../../assets/images/logo.svg"
-import { useContext } from "react";
+import { useContext, useEffect, useState } from "react";
 import UserContext from "../../context/UserContext";
+import { getAllPendingOrders } from "../../api/orderApi";
 
 const menuItems = {
   header: [{ title: "คำขอ", url: "/inbox", icon: Inbox }],
@@ -59,6 +60,15 @@ const menuItems = {
 const AppSidebar = () => {
   const location = useLocation().pathname;
   const { user } = useContext(UserContext);
+  const [inboxCount, setInboxCount] = useState(0)
+
+  useEffect(() => {
+    const getInboxCount = async () => {
+      const orders = await getAllPendingOrders();
+      setInboxCount(orders.length)
+    }
+    getInboxCount();
+  }, [])
 
   return (
     <Sidebar>
@@ -79,7 +89,7 @@ const AppSidebar = () => {
                   <span>{item.title}</span>
                 </Link>
               </SidebarMenuButton>
-              <SidebarMenuBadge className="text-white">24</SidebarMenuBadge>
+              <SidebarMenuBadge className="text-white">{inboxCount > 0 ? inboxCount : <></>}</SidebarMenuBadge>
             </SidebarMenuItem>
           ))}
         </SidebarMenu>

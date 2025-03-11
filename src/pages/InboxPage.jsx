@@ -1,25 +1,10 @@
 import OrderCard from "../components/shared/OrderCard";
+import { useInbox } from "../routes/inboxRoute";
 
-const inboxData = [
-  {
-    id: "1hb34yfgbe",
-    date: new Date(Date.now()).toLocaleString(),
-    name: "ราตรี พรสมหวัง",
-    type: "บนบาน",
-    service: "พระตรีมูรติ",
-    detail: "ไข่ต้ม 100",
-  },
-  {
-    id: "mb348u3jbe",
-    date: new Date(Date.now()).toLocaleString(),
-    name: "ราตรี พรสมหวัง",
-    type: "แก้บน",
-    service: "พระตรีมูรติ",
-    detail: "ไก่ต้ม 20",
-  },
-];
 
 const InboxPage = () => {
+  const result = useInbox()
+
   const handelConfirm = (id) => {
     console.log("PUT" + id);
   };
@@ -30,14 +15,14 @@ const InboxPage = () => {
 
   return (
     <div className="space-y-4">
-      {inboxData.map((item, index) => (
+      {result.length > 0 ? result.map((item, index) => (
         <OrderCard
           key={index}
           data={item}
-          onConfirm={() => handelConfirm(item.id)}
-          onCancel={() => handelCancel(item.id)}
+          onConfirm={() => handelConfirm(item.ID)}
+          onCancel={() => handelCancel(item.ID)}
         />
-      ))}
+      )): <div>ไม่มีคำขอใหม่</div>}
     </div>
   );
 };
