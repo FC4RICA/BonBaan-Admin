@@ -22,13 +22,15 @@ import { usersLoader } from "../routes/usersRoute";
 import { insertServiceAction, insertSrviceLoader } from "../routes/insertServiceRoute";
 import { ordersAction, ordersLoader } from "../routes/OrdersRoute";
 import { servicesAction, servicesLoader } from "../routes/servicesRoute";
+import ErrorPage from "../pages/ErrorPage";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <LoginPage />,
     action: loginAction,
-    loader: loginLoader
+    loader: loginLoader,
+    errorElement: <ErrorPage />
   },
   {
     path: "/logout",
@@ -36,6 +38,7 @@ const router = createBrowserRouter([
   },
   {
     element: <ProtectedRoute />,
+    errorElement: <ErrorPage />,
     children: [
       {
         element: <Layout />,
