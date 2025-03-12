@@ -1,16 +1,28 @@
+import { useSubmit } from "react-router";
 import OrderCard from "../components/shared/OrderCard";
 import { useInbox } from "../routes/inboxRoute";
 
 
 const InboxPage = () => {
-  const result = useInbox()
+  const result = useInbox();
 
-  const handelConfirm = (id) => {
-    console.log("PUT" + id);
+  const submit = useSubmit();
+  const handelConfirm = (id, value) => {
+    const formData = new FormData();
+    formData.append("intent", "confirm");
+    formData.append("id", id);
+    formData.append("price", value.price);
+
+    submit(formData, { method: "post", action: "/inbox" });
   };
 
-  const handelCancel = (id) => {
-    console.log("DELETE" + id);
+  const handelCancel = (id, value) => {
+    const formData = new FormData();
+    formData.append("intent", "cancel");
+    formData.append("id", id);
+    formData.append("cancel_reason", value.cancelReason);
+
+    submit(formData, { method: "post", action: "/inbox" });
   };
 
   return (
@@ -19,8 +31,8 @@ const InboxPage = () => {
         <OrderCard
           key={index}
           data={item}
-          onConfirm={() => handelConfirm(item.ID)}
-          onCancel={() => handelCancel(item.ID)}
+          onConfirm={(value) => handelConfirm(item.ID, value)}
+          onCancel={(value) => handelCancel(item.ID, value)}
         />
       )): <div>ไม่มีคำขอใหม่</div>}
     </div>

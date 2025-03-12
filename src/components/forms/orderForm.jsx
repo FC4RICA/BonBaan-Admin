@@ -30,8 +30,7 @@ const CancelOrderForm = ({ onSubmit, closeDialog, children }) => {
   const form = useForm({
     resolver: zodResolver(cancelOrderSchema),
     defaultValues: {
-      header: "",
-      description: "",
+      cancelReason: "",
     },
   });
 
@@ -42,9 +41,6 @@ const CancelOrderForm = ({ onSubmit, closeDialog, children }) => {
     if (closeDialog) {
       closeDialog();
     }
-    console.log(values);
-
-    // call api
   };
 
   return (
@@ -52,25 +48,12 @@ const CancelOrderForm = ({ onSubmit, closeDialog, children }) => {
       <form onSubmit={form.handleSubmit(handelSubmit)} className="space-y-8">
         <FormField
           control={form.control}
-          name="header"
+          name="cancelReason"
           render={({ field }) => (
             <FormItem>
               <FormLabel>เหตุผลการปฎิเสธคำสั่งซื้อ</FormLabel>
               <FormControl>
                 <Input {...field} placeholder="หัวข้อเหตุผล" />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="description"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>รายละเอียดการปฎิเสธคำสั่งซื้อ</FormLabel>
-              <FormControl>
-                <Textarea {...field} placeholder="รายละเอียด" />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -97,9 +80,6 @@ const ConfirmOrderForm = ({ onSubmit, closeDialog, children }) => {
     if (closeDialog) {
       closeDialog();
     }
-    console.log(values);
-
-    // call api
   };
 
   return (
