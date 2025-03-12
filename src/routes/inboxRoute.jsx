@@ -1,5 +1,5 @@
 import { useActionData, useLoaderData } from "react-router";
-import { getAllPendingOrders } from "../api/orderApi";
+import { cancelCustomOrder, getAllPendingOrders } from "../api/orderApi";
 
 export const inboxLoader = async () => {
   const statuses = await getAllPendingOrders();
@@ -16,10 +16,12 @@ export const inboxAction = async ({ request }) => {
   try {
     if (intent === "accept") {
       const id = formData.get("id");
-
+      const price = formData.get("price");
+      await acceptCustomOrder(id, price)
     } else if (intent === "cancel") {
       const id = formData.get("id");
-
+      const reason = formData.get("cancel_reason");
+      await cancelCustomOrder(id, { cancel_reason: reason })
     }
     return { success: true };
   } catch (error) {
