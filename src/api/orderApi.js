@@ -12,10 +12,31 @@ export const getOrders = async (pageSize = 10, currentPage = 1) => {
   return response.data;
 };
 
-export const getOrdersByStatus = async (id) => {
-  const response = await api.get(`/orders`, { params: { status: id } });
+export const getOrdersByStatus = async (id, pageSize = 10, currentPage = 1) => {
+  const response = await api.get(`/orders`, {
+    params: { status: id, pageSize, currentPage },
+  });
   return response.data;
 };
+
+export const getAllPendingOrders = async () => {
+  const statuses = await getOrderStatuses();
+  const pendingStatus = statuses.data.find(
+    (status) => status.name == "pending"
+  );
+  const response = await getOrdersByStatus(pendingStatus.ID, 9999);
+  return response.data;
+};
+
+export const acceptCustomOrder = async (id, { price }) => {
+  const response = await api.patch(`/orders/${id}/accept`, { price });
+  return response.data;
+};
+
+export const cancelCustomOrder = async (id, { cancel_reason }) => {
+  const response = await api.post(`/orders/${id}/cancel`, { cancel_reason });
+  return response.data;
+}
 
 // Order Type
 export const getOrderType = async () => {
