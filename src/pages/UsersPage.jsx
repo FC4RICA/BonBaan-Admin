@@ -49,7 +49,7 @@ const UsersPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {pageData.map((item, index) => (
+            {pageData.length > 0 ? pageData.map((item, index) => (
               <TableRow key={index}>
                 <TableCell>{item.username}</TableCell>
                 <TableCell>{item.firstname + " " + item.lastname}</TableCell>
@@ -58,7 +58,10 @@ const UsersPage = () => {
                 <TableCell>{item.totalSpend}</TableCell>
                 <TableCell>{item.CreatedAt}</TableCell>
               </TableRow>
-            ))}
+            )):
+            <TableRow>
+              <TableCell>ไม่พบข้อมูลผู้ใช้</TableCell>
+            </TableRow>}
           </TableBody>
         </Table>
         <div className="flex justify-between">
