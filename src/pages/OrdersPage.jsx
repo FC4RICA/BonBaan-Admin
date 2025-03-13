@@ -17,7 +17,7 @@ import {
   PaginationLast,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EditLink } from "../components/shared/link";
 import {
   Select,
@@ -30,10 +30,23 @@ import {
 } from "@/components/ui/select";
 import { useOrders } from "../routes/OrdersRoute";
 import { Button } from "../components/ui/button"
+import { getOrders } from "../api/orderApi";
 
 const OrdersPage = () => {
-  const result = useOrders();
-  const pagination = result.data.pagination;
+  const { statuses ,orders: initialOrders, pagination } = useOrders();
+    const [orders, setOrders] = useState(initialOrders);
+    const [page, setPage] = useState(1);
+  
+    useEffect(() => {
+      if (page === 1) return; // skip first page
+  
+      getCurrentServicesPage();
+    }, [page]);
+  
+    const getCurrentServicesPage = async () => {
+      const response = await getOrders({ currentPage: page });
+      setOrders(response.data.data.orders);
+    };
   
   return (
     <div className="flex flex-col gap-4">
@@ -46,7 +59,7 @@ const OrdersPage = () => {
           <SelectContent>
             <SelectGroup>
               <SelectLabel>สถานะคำสั่งซื้อ</SelectLabel>
-              {result.statuses.map((item) => (
+              {statuses.map((item) => (
                 <SelectItem key={item.ID} value={item.ID}>
                   {item.name}
                 </SelectItem>
@@ -75,56 +88,57 @@ const OrdersPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {result.data.orders.map((row, index) => (
+            {orders.length > 0 ? orders.map((row, index) => (
               <TableRow key={row.ID}>
                 <TableActionCell title={row.ID}>
                   <EditLink to={`/orders/${row.ID}`} />
                 </TableActionCell>
                 <TableCell>{row.Service.name}</TableCell>
-                <TableCell>{row.Type.name}</TableCell>
+                <TableCell>{row.OrderType.name}</TableCell>
                 <TableCell>{row.User.firstname + " " + row.User.lastname}</TableCell>
                 <TableCell>{row.orderDetail?.price}</TableCell>
                 <TableCell>{row.Status.name}</TableCell>
                 <TableCell>{row.CreatedAt}</TableCell>
               </TableRow>
-            ))}
+            )):
+            <TableRow>
+              <TableCell colSpan="5">
+                ไม่พบข้อมูลคำสั่งซื้อ
+              </TableCell>
+            </TableRow>}
           </TableBody>
         </Table>
         <div className="flex justify-between">
           <div className="flex items-center text-sm text-[--gray]">
-            แสดง {result.data.orders.length} จากทั้งหมด {pagination.totalRecords}
+            แสดง {orders.length} จากทั้งหมด {pagination.totalRecords}
           </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationFirst
-                  isActive={pagination.currentPage === 1 ? false : true}
+                  onClick={() => setPage(1)}
+                  isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationPrevious
-                  isActive={pagination.currentPage === 1 ? false : true}
+                  onClick={() => setPage((prev) => prev - 1)}
+                  isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
-                <PaginationLink size="sm">{pagination.currentPage}</PaginationLink>
+                <PaginationLink size="sm">{page}</PaginationLink>
               </PaginationItem>
               <PaginationItem>
                 <PaginationNext
-                  isActive={
-                    (pagination.currentPage === pagination.totalPages || pagination.totalPages <= 0)
-                      ? false
-                      : true
-                  }
+                  onClick={() => setPage((prev) => prev + 1)}
+                  isActive={page >= pagination.totalPages ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationLast
-                  isActive={
-                    (pagination.currentPage === pagination.totalPages || pagination.totalPages <= 0)
-                      ? false
-                      : true
-                  }
+                  onClick={() => setPage(pagination.totalPages)}
+                  isActive={page >= pagination.totalPages ? false : true}
                 />
               </PaginationItem>
             </PaginationContent>
