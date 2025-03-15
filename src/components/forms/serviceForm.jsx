@@ -189,7 +189,7 @@ const CreateServiceForm = ({
               </div>
             </CollapsibleInput>
 
-            {/* Settings */}
+            {/* Settings
             <CollapsibleInput header="ตั้งค่าเพิ่มเติม">
               <FormField
                 control={form.control}
@@ -206,7 +206,7 @@ const CreateServiceForm = ({
                   </FormItem>
                 )}
               />
-            </CollapsibleInput>
+            </CollapsibleInput> */}
           </div>
           <div className="flex flex-col min-w-64 w-1/3 gap-4">
             {/* Submit Button */}
