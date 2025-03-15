@@ -24,6 +24,7 @@ import { ordersAction, ordersLoader } from "../routes/OrdersRoute";
 import { servicesAction, servicesLoader } from "../routes/servicesRoute";
 import ErrorPage from "../pages/ErrorPage";
 import { inboxAction, inboxLoader } from "../routes/inboxRoute";
+import { reviewsLoader } from "../routes/reviewsRoute";
 
 const router = createBrowserRouter([
   {
@@ -123,6 +124,7 @@ const router = createBrowserRouter([
               {
                 path: "/services/reviews",
                 element: <ServicesReviewsPage />,
+                loader: reviewsLoader,
                 handle: {
                   crumb: () => "รีวิว",
                 },
