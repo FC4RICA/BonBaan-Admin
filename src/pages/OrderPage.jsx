@@ -6,51 +6,36 @@ import {
   CompleteOrderDialog,
   OrderStatusDialog
 } from "../components/shared/orderDialog";
-
-const orderData = {
-  id: "5c060f02",
-  user: {
-    name: "ราตรี พรสมหวัง",
-    email: "ratee.porn@mail.com",
-  },
-  service: {
-    name: "ท้าวเวสสุวรรณ วัดจุฬามณี",
-  },
-  type: { name: "บนบาน" },
-  status: { name: "กำลังดำเนินการก" },
-  wish: "ขอให้สุขภาพแข็งแรง",
-  dueAt: new Date(Date.now()).toDateString(),
-  createAt: new Date(Date.now()).toDateString(),
-  price: "259",
-  items: "สินค้า 1",
-  transaction: {
-    name: "ราตรี พรสมหวัง",
-    location:
-      "123/456 ซอยประชาอุทิศ 69 แขวงบางมด แขวงบางมด เขตทุ่งครุ จังหวัดกรุงเทพมหานคร 10140",
-    date: new Date(Date.now()).toDateString(),
-    status: "กำลังดำเนินการ",
-    method: "QR code",
-  },
-};
+import { useOrder } from "../routes/orderRoute";
 
 const OrderPage = () => {
-  const onCancel = () => {};
-  const onConfirm = () => {};
-  const onChangeStatus = () => {};
+  const { statuses, order } = useOrder();
+
+  const onCancel = () => {
+
+  };
+
+  const onComplete = () => {
+
+  };
+
+  const onChangeStatus = () => {
+
+  };
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex gap-4">
         <div className="py-2 px-4 bg-white font-bold border border-[--border] rounded-md w-full">
-          คำสั่งซื้อ {orderData.id}
+          คำสั่งซื้อ {orderData.ID}
         </div>
-        {orderData.status.name === "กำลังดำเนินการ" ? (
+        {order.Status.name === "กำลังดำเนินการ" ? (
           <CompleteOrderDialog
-            onSubmit={onConfirm}
+            onSubmit={onComplete}
             trigger={<Button>สำเร็จคำสั่งซื้อ</Button>}
           />
         ) : (
-          <OrderStatusDialog onSubmit={onChangeStatus} trigger={<Button>อัพเดตสถานะคำสั่งซื้อ</Button>}/>
+          <OrderStatusDialog statuses={statuses} currentStatusID={order.Status.ID} onSubmit={onChangeStatus} trigger={<Button>อัพเดตสถานะคำสั่งซื้อ</Button>}/>
         )}
         <CancelOrderDialog
           onSubmit={onCancel}
@@ -60,42 +45,43 @@ const OrderPage = () => {
       <CollapsibleInput header="ข้อมูลคำสั่งซื้อ">
         <div className="grid gap-4 grid-cols-5">
           <InfoField label="ผู้ซื้อ" className="col-span-3">
-            {orderData.user.name} ({orderData.user.email})
+            {order.User.firstname + " " + order.User.lastname} ({order.User.email})
           </InfoField>
           <InfoField label="สถานะ" className="col-span-2">
-            {orderData.status.name}
+            {order.Status.name}
           </InfoField>
           <InfoField label="ชื่อบริการ" className="col-span-2">
-            {orderData.service.name}
+            {order.Service.name}
           </InfoField>
           <InfoField label="ประเภท" className="col-span-1">
-            {orderData.type.name}
+            {order.OrderType.name}
           </InfoField>
           <InfoField label="วันที่สั่งซื้อ" className="col-span-2">
-            {orderData.createAt}
+            {order.CreatedAt}
           </InfoField>
           <InfoField label="คำขอ" className="col-span-3">
-            {orderData.wish}
+            {order.VowRecord.wish}
           </InfoField>
           <InfoField label="วันที่การบนสิ้นสุด" className="col-span-2">
-            {orderData.dueAt}
+            {order.VowRecord.deadline}
           </InfoField>
           <InfoField label="รายการสินค้า" className="col-span-3">
-            {orderData.items}
+            {order.item}
           </InfoField>
           <InfoField label="ราคา" className="col-span-2">
-            {orderData.price} บาท
+            {order.price} บาท
           </InfoField>
         </div>
       </CollapsibleInput>
-      <div className="flex gap-4">
+      {/* waiting for real transaction data */}
+      {/* <div className="flex gap-4">
         <div className="w-full">
           <CollapsibleInput header="ข้อมูลใบเสร็จ">
             <div className="flex flex-col gap-3">
-              <p>{orderData.transaction.name}</p>
-              <p>{orderData.transaction.location}</p>
-              <p>{orderData.transaction.method}</p>
-              <p>{orderData.transaction.date}</p>
+              <p>{order.transaction.name}</p>
+              <p>{order.transaction.location}</p>
+              <p>{order.transaction.method}</p>
+              <p>{order.transaction.date}</p>
             </div>
           </CollapsibleInput>
         </div>
@@ -103,15 +89,22 @@ const OrderPage = () => {
           <CollapsibleInput header="การชำระเงิน">
             <div className="grid gap-4 ">
               <InfoField label="ช่องทางการชำระเงิน">
-                {orderData.transaction.method}
+                {order.transaction.method}
               </InfoField>
               <InfoField label="สถานะ">
-                {orderData.transaction.status}
+                {order.Transaction.charge.status}
               </InfoField>
             </div>
           </CollapsibleInput>
         </div>
-      </div>
+      </div> */}
+      <CollapsibleInput header="หลักฐานคำสั่งซื้อ">
+        <div className="grid gap-4 grid-cols-4">
+          {order.Attachment.length > 0 ?
+          {/* TODO: map images and video */}:
+          <div>ไม่พบหลักฐานคำสั่งซื้อ</div>}
+        </div>
+      </CollapsibleInput>
     </div>
   );
 };

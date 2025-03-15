@@ -108,32 +108,13 @@ const ConfirmOrderForm = ({ onSubmit, closeDialog, children }) => {
   );
 };
 
-const OrderStatusForm = ({ onSubmit, closeDialog, children }) => {
+const OrderStatusForm = ({ statuses, currentStatusID, onSubmit, closeDialog, children }) => {
   const form = useForm({
     resolver: zodResolver(orderStatusSchema),
     defaultValues: {
-      status: ""
+      status: currentStatusID
     }
   });
-
-  const status = [
-    {
-      id: 1,
-      name: "รอรับออเดอร์",
-    },
-    {
-      id: 2,
-      name: "กำลังเตรียมการ",
-    },
-    {
-      id: 3,
-      name: "กำลังดำเนินการ",
-    },
-    {
-      id: 4,
-      name: "รอการยืนยัน",
-    }
-  ]
 
   const handleSubmit = (values) => {
     if (onSubmit) onSubmit(values);
@@ -157,8 +138,8 @@ const OrderStatusForm = ({ onSubmit, closeDialog, children }) => {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {status.map((item) => (
-                    <SelectItem key={item.id} value={item.id.toString()}>{item.name}</SelectItem>
+                  {statuses.map((status) => (
+                    <SelectItem key={status.ID} value={status.ID}>{status.name}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>

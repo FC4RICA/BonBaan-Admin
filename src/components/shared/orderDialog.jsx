@@ -76,7 +76,7 @@ const CancelOrderDialog = ({ onSubmit, trigger }) => {
   );
 };
 
-const OrderStatusDialog = ({ onSubmit, trigger }) => {
+const OrderStatusDialog = ({ statuses, currentStatusID, onSubmit, trigger }) => {
   const [open, setOpen] = useState(false);
 
   return (
