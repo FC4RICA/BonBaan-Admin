@@ -8,7 +8,7 @@ const packageSchema = z.object({
     .positive({ message: "ราคาต้องเป็นจำนวนเต็มบวก" })
     .int({ message: "ราคาต้องเป็นจำนวนเต็มบวก" }),
   order_type_id: z.string().nonempty({ message: "กรุณาเลือกประเภทของแพ็กเกจ" }),
-  description: z.string().nonempty({ message: "กรุณากำหนดคำอธิบายแพ็กเกจ" }),
+  description: z.string().nonempty({ message: "กรุณากำหนดรายละเอียดแพ็กเกจ" }),
   item: z.string().nonempty({ message: "กรุณากำหนดสินค้าในแพ็กเกจ" })
 });
 

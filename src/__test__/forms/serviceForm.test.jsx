@@ -2,8 +2,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, it, expect, vi } from "vitest";
 import "@testing-library/jest-dom";
-import { CreateServiceForm } from "../components/forms/serviceForm";
-import { any, string } from "zod";
+import { CreateServiceForm } from "../../components/forms/serviceForm";
 
 beforeAll(() => {
   global.URL.createObjectURL = vi.fn(() => "mock-url");
@@ -11,7 +10,16 @@ beforeAll(() => {
 
 describe("CreateServiceForm - Render", () => {
   it("render the form field correctly", () => {
-    render(<CreateServiceForm />);
+    render(
+      <CreateServiceForm
+        categories={[{ ID: "love", name: "ความรัก" }]}
+        types={[
+          { ID: "1", name: "1" },
+          { ID: "2", name: "2" },
+        ]}
+      />
+    );
+
     expect(screen.getByPlaceholderText("ชื่อบริการ")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("รายละเอียดบริการ")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("ชื่อแพ็กเกจ")).toBeInTheDocument();
@@ -19,10 +27,10 @@ describe("CreateServiceForm - Render", () => {
     expect(
       screen.getByPlaceholderText("รายละเอียดแพ็กเกจ")
     ).toBeInTheDocument();
-    expect(screen.getByPlaceholderText("สถานที่บริการ")).toBeInTheDocument();
     expect(
-      screen.getByRole("checkbox", { name: "อนุญาตคำสั่งซื้อพิเศษ" })
+      screen.getByPlaceholderText("รายการสิ่งของในแพ็กเกจ")
     ).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("สถานที่บริการ")).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "เพิ่มแพ็กเกจใหม่" })
     ).toBeInTheDocument();
@@ -30,7 +38,7 @@ describe("CreateServiceForm - Render", () => {
       screen.getByRole("button", { name: "เพิ่มบริการใหม่" })
     ).toBeInTheDocument();
     const checkboxes = screen.getAllByRole("checkbox");
-    expect(checkboxes.length).greaterThanOrEqual(2);
+    expect(checkboxes.length).greaterThanOrEqual(1);
     expect(screen.getByTestId("service-images")).toBeInTheDocument();
     expect(screen.getByText("ประเภท")).toBeInTheDocument();
     expect(screen.getAllByRole("radio").length).equal(2);
@@ -39,17 +47,25 @@ describe("CreateServiceForm - Render", () => {
   it("submits correctly when valid values are provided", async () => {
     const onSubmit = vi.fn();
 
-    render(<CreateServiceForm onSubmit={onSubmit} />);
+    render(
+      <CreateServiceForm
+        onSubmit={onSubmit}
+        categories={[{ ID: "1", name: "ความรัก" }]}
+        types={[
+          { ID: "1", name: "1" },
+          { ID: "2", name: "2" },
+        ]}
+      />
+    );
 
+    // Get all input fields
     const nameInput = screen.getByPlaceholderText("ชื่อบริการ");
     const descriptionInput = screen.getByPlaceholderText("รายละเอียดบริการ");
     const packageNameInput = screen.getByLabelText("ชื่อแพ็กเกจ");
     const packagePriceInput = screen.getByLabelText("ราคา");
-    const packageDescriptionInput = screen.getByLabelText("รายการสินค้า");
-    const locationInput = screen.getByPlaceholderText("สถานที่บริการ");
-    const customInput = screen.getByRole("checkbox", {
-      name: "อนุญาตคำสั่งซื้อพิเศษ",
-    });
+    const packageDescriptionInput = screen.getByLabelText("รายละเอียด");
+    const packageItemInput = screen.getByLabelText("รายการสิ่งของ");
+    const addressInput = screen.getByPlaceholderText("สถานที่บริการ");
     const imageInput = screen.getByTestId("service-images");
     const categoryInput = screen.getByLabelText("ความรัก");
 
@@ -62,8 +78,8 @@ describe("CreateServiceForm - Render", () => {
       packageDescriptionInput,
       "This is a valid description."
     );
-    await userEvent.type(locationInput, "This is a valid location.");
-    await userEvent.click(customInput);
+    await userEvent.type(packageItemInput, "item1\nitem2\nitem3");
+    await userEvent.type(addressInput, "This is a valid address.");
 
     const image = new File(["content"], "image.jpg", {
       type: "image/jpeg",
@@ -79,6 +95,7 @@ describe("CreateServiceForm - Render", () => {
     });
     await userEvent.click(submitButton);
 
+    // Check if error exist
     expect(
       await screen.queryByText("กรุณากำหนดชื่อของบริการ")
     ).not.toBeInTheDocument();
@@ -98,29 +115,46 @@ describe("CreateServiceForm - Render", () => {
       await screen.queryByText("ราคาต้องเป็นจำนวนเต็มบวก")
     ).not.toBeInTheDocument();
     expect(
-      await screen.queryByText("กรุณากำหนดคำอธิบายแพ็กเกจ")
+      await screen.queryByText("กรุณากำหนดรายละเอียดแพ็กเกจ")
+    ).not.toBeInTheDocument();
+    expect(
+      await screen.queryByText("กรุณากำหนดสินค้าในแพ็กเกจ")
     ).not.toBeInTheDocument();
 
     await expect(onSubmit).toHaveBeenCalledTimes(1);
 
-    await expect(onSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({
-        name: "New Service",
-        description: "This is a valid description.",
-        location: "This is a valid location.",
-        packages: [
-          {
-            name: "Package name",
-            price: 100,
-            description: "This is a valid description.",
-            type: expect.any(String)
-          },
-        ],
-        customable: true,
-        images: [image],
-        categories: ["1"],
-      })
-    );
+    // Extract FormData from mock call
+    const formData = onSubmit.mock.calls[0][0];
+
+    // Convert FormData to an object
+    const formDataToObject = (formData) => {
+      const obj = {};
+      formData.forEach((value, key) => {
+        if (obj[key]) {
+          // Handle arrays (e.g., multiple values for same key)
+          obj[key] = Array.isArray(obj[key])
+            ? [...obj[key], value]
+            : [obj[key], value];
+        } else {
+          obj[key] = value;
+        }
+      });
+      return obj;
+    };
+
+    const receivedData = formDataToObject(formData);
+
+    expect(receivedData).toMatchObject({
+      name: "New Service",
+      description: "This is a valid description.",
+      address: "This is a valid address.",
+      categories: "1",
+      custom_package: "true",
+      packages: "[{\"name\":\"Package name\",\"price\":100,\"order_type_id\":\"1\",\"description\":\"This is a valid description.\",\"item\":[\"item1\",\"item2\",\"item3\"]}]",
+    });
+
+    // Check for image file manually
+    expect(receivedData.attachments).toBeDefined();
   });
 });
 
@@ -150,7 +184,10 @@ describe("CreateServiceForm - Validation", () => {
       await screen.getByText("ราคาต้องเป็นจำนวนเต็มบวก")
     ).toBeInTheDocument();
     expect(
-      await screen.getByText("กรุณากำหนดคำอธิบายแพ็กเกจ")
+      await screen.getByText("กรุณากำหนดรายละเอียดแพ็กเกจ")
+    ).toBeInTheDocument();
+    expect(
+      await screen.queryByText("กรุณากำหนดสินค้าในแพ็กเกจ")
     ).toBeInTheDocument();
   });
 
@@ -228,7 +265,14 @@ describe("CreateServiceForm - Image Validation", () => {
 
 describe("CreateServiceForm - Packages Validation", () => {
   it("packages adding and removing working correctly", async () => {
-    render(<CreateServiceForm />);
+    render(
+      <CreateServiceForm
+        types={[
+          { ID: "1", name: "1" },
+          { ID: "2", name: "2" },
+        ]}
+      />
+    );
 
     const addPackageButton = screen.getByRole("button", {
       name: "เพิ่มแพ็กเกจใหม่",
@@ -238,7 +282,9 @@ describe("CreateServiceForm - Packages Validation", () => {
 
     expect(await screen.getAllByLabelText("ชื่อแพ็กเกจ").length).equal(2);
     expect(await screen.getAllByLabelText("ราคา").length).equal(2);
-    expect(await screen.getAllByLabelText("รายการสินค้า").length).equal(2);
+    expect(await screen.getAllByLabelText("รายละเอียด").length).equal(2);
+    expect(await screen.getAllByLabelText("รายการสิ่งของ").length).equal(2);
+    expect(screen.getAllByRole("radio").length).equal(4);
 
     const removePackageButton = await screen.getAllByLabelText(
       /delete-package/i
@@ -247,6 +293,8 @@ describe("CreateServiceForm - Packages Validation", () => {
 
     expect(await screen.getAllByLabelText("ชื่อแพ็กเกจ").length).equal(1);
     expect(await screen.getAllByLabelText("ราคา").length).equal(1);
-    expect(await screen.getAllByLabelText("รายการสินค้า").length).equal(1);
+    expect(await screen.getAllByLabelText("รายละเอียด").length).equal(1);
+    expect(await screen.getAllByLabelText("รายการสิ่งของ").length).equal(1);
+    expect(await screen.getAllByRole("radio").length).equal(2);
   });
 });
