@@ -86,7 +86,7 @@ const ServicesCategoriesPage = () => {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {pageData.map((row, index) => (
+            {pageData.length > 0 ? pageData.map((row, index) => (
               <TableRow key={row.ID}>
                 {editedRow === index ? (
                   <TableFormCell
@@ -119,7 +119,12 @@ const ServicesCategoriesPage = () => {
                   </>
                 )}
               </TableRow>
-            ))}
+            )):
+            <TableRow>
+              <TableCell colSpan="3">
+                ไม่พบข้อมูลหมวดหมู่
+              </TableCell>
+            </TableRow>}
           </TableBody>
         </Table>
         <div className="flex justify-between">

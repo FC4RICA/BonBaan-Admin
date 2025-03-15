@@ -19,6 +19,11 @@ export const getOrdersByStatus = async (id, currentPage = 1, pageSize = 10) => {
   return response.data;
 };
 
+export const getOrderByUserID = async (id) => {
+  const response = await api.get(`/users/orders/${id}`);
+  return response.data;
+}
+
 export const getAllPendingOrders = async () => {
   const statuses = await getOrderStatuses();
   const pendingStatus = statuses.data.find(

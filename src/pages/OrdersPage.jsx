@@ -102,7 +102,7 @@ const OrdersPage = () => {
               </TableRow>
             )):
             <TableRow>
-              <TableCell colSpan="5">
+              <TableCell colSpan="7">
                 ไม่พบข้อมูลคำสั่งซื้อ
               </TableCell>
             </TableRow>}

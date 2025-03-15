@@ -60,7 +60,9 @@ const UsersPage = () => {
               </TableRow>
             )):
             <TableRow>
-              <TableCell>ไม่พบข้อมูลผู้ใช้</TableCell>
+              <TableCell colSpan="6">
+                ไม่พบข้อมูลผู้ใช้
+              </TableCell>
             </TableRow>}
           </TableBody>
         </Table>
