@@ -7,8 +7,9 @@ const packageSchema = z.object({
     .number()
     .positive({ message: "ราคาต้องเป็นจำนวนเต็มบวก" })
     .int({ message: "ราคาต้องเป็นจำนวนเต็มบวก" }),
-  type: z.string().nonempty({ message: "กรุณาเลือกประเภทของแพ็กเกจ" }),
+  order_type_id: z.string().nonempty({ message: "กรุณาเลือกประเภทของแพ็กเกจ" }),
   description: z.string().nonempty({ message: "กรุณากำหนดคำอธิบายแพ็กเกจ" }),
+  item: z.string().nonempty({ message: "กรุณากำหนดสินค้าในแพ็กเกจ" })
 });
 
 const imageSchema = z.union([
@@ -30,14 +31,14 @@ const serviceSchema = z.object({
   description: z.string().nonempty({
     message: "กรุณากำหนดคำอธิบายของบริการ",
   }),
-  location: z.string().nonempty({
+  address: z.string().nonempty({
     message: "กรุณากำหนดสถานที่ของบริการ",
   }),
   packages: z
     .array(packageSchema)
     .min(1, { message: "ต้องมีอย่างน้อย 1 แพ็กเกจ" }),
-  customable: z.boolean(),
-  images: z
+  custom_package: z.boolean(),
+  attachments: z
     .array(imageSchema)
     .nonempty({ message: "กรุณาเพิ่มรูปภาพอย่างน้อย 1 รูป" }),
   categories: z

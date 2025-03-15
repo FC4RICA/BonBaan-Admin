@@ -18,47 +18,26 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash, X } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-const categories = [
-  {
-    id: "1",
-    name: "ความรัก",
-  },
-  {
-    id: "2",
-    name: "สุขภาพ",
-  },
-  {
-    id: "3",
-    name: "การเงิน",
-  },
-];
-
-const types = [
-  {
-    id: "1",
-    name: "บนบาน",
-  },
-  {
-    id: "2",
-    name: "แก้บน",
-  },
-];
-
-const defaultServiceValues = {
-  name: "",
-  description: "",
-  location: "",
-  packages: [{ name: "", price: "", type: "1", description: "" }],
-  customable: false,
-  images: [],
-  categories: [],
-};
-
 const CreateServiceForm = ({
-  defaultValues = defaultServiceValues,
+  defaultValues,
   submitButtonLabel = "เพิ่มบริการใหม่", // Default for create
   onSubmit,
+  categories = [],
+  types = [],
 }) => {
+
+  if (!defaultValues) {    
+    defaultValues = {
+      name: "",
+      description: "",
+      address: "",
+      packages: [{ name: "", price: "", order_type_id: types[0]?.ID || "", description: "", item: "" }],
+      custom_package: true,
+      attachments: [],
+      categories: [],
+    }
+  }
+  
   const form = useForm({
     resolver: zodResolver(serviceSchema),
     defaultValues: defaultValues,
@@ -66,7 +45,7 @@ const CreateServiceForm = ({
 
   const fileRef = form.register("file");
   const [existingImages, setExistingImages] = useState(
-    defaultValues.images || []
+    defaultValues.attachments || []
   );
   const [uploadedImages, setUploadedImages] = useState([]);
   const handleImageChange = (event) => {
@@ -80,7 +59,7 @@ const CreateServiceForm = ({
       const newImages = [...uploadedImages, ...previews];
       setUploadedImages(newImages);
       form.setValue(
-        "images",
+        "attachments",
         [...existingImages, ...newImages.map((img) => img.file)],
         { shouldValidate: true }
       );
@@ -99,7 +78,7 @@ const CreateServiceForm = ({
     }
 
     // Update form state to match removed images
-    form.setValue("images", [...newImages.map((img) => img.file)], {
+    form.setValue("attachments", [...newImages.map((img) => img.file)], {
       shouldValidate: true,
     });
   };
@@ -115,20 +94,32 @@ const CreateServiceForm = ({
     formData.append("existingImages", JSON.stringify(existingImages));
 
     uploadedImages.forEach(({ file }) => {
-      formData.append("images", file);
+      formData.append("attachments", file);
     });
 
     Object.keys(values).forEach((key) => {
-      if (key !== "images") {
-        formData.append(key, values[key]);
+      if (key !== "attachments") {
+        if (key === "packages") {
+          values[key].forEach((value) => {
+            value.item = value.item.split("\n");
+          })
+          formData.append(key, JSON.stringify(values[key]))
+        }
+        else if (key === "categories") {
+          values[key].forEach((category) => {
+            formData.append(key, category);
+          });
+        }
+        else {
+          formData.append(key, values[key]);
+        }
       }
+      console.log(key, values[key]);
     });
-
+    
     if (onSubmit) {
-      onSubmit(values);
+      onSubmit(formData);
     }
-    console.log(values);
-    // call api
   };
 
   return (
@@ -171,6 +162,7 @@ const CreateServiceForm = ({
               <div className="space-y-4">
                 {fields.map((item, index) => (
                   <PackageForm
+                    types={types}
                     index={index}
                     form={form}
                     remove={remove}
@@ -183,7 +175,7 @@ const CreateServiceForm = ({
                   <Button
                     type="button"
                     onClick={() =>
-                      append({ name: "", price: "", description: "" })
+                      append({ name: "", price: "", type: "", description: "" })
                     }
                   >
                     <Plus />
@@ -201,7 +193,7 @@ const CreateServiceForm = ({
             <CollapsibleInput header="ตั้งค่าเพิ่มเติม">
               <FormField
                 control={form.control}
-                name="customable"
+                name="custom_package"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                     <FormControl>
@@ -253,7 +245,7 @@ const CreateServiceForm = ({
               {/* Images Input */}
               <FormField
                 control={form.control}
-                name="images"
+                name="attachments"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormControl>
@@ -308,27 +300,27 @@ const CreateServiceForm = ({
                   <FormItem>
                     {categories.map((category) => (
                       <FormField
-                        key={category.id}
+                        key={category.ID}
                         control={form.control}
                         name="categories"
                         render={({ field }) => {
                           return (
                             <FormItem
-                              key={category.id}
+                              key={category.ID}
                               className="flex flex-row items-center space-x-3 space-y-0"
                             >
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value?.includes(category.id)}
+                                  checked={field.value?.includes(category.ID)}
                                   onCheckedChange={(checked) => {
                                     return checked
                                       ? field.onChange([
                                           ...field.value,
-                                          category.id,
+                                          category.ID,
                                         ])
                                       : field.onChange(
                                           field.value?.filter(
-                                            (value) => value !== category.id
+                                            (value) => value !== category.ID
                                           )
                                         );
                                   }}
@@ -346,11 +338,11 @@ const CreateServiceForm = ({
               />
             </CollapsibleInput>
 
-            {/* Service Location */}
+            {/* Service Address */}
             <CollapsibleInput header="สถานที่">
               <FormField
                 control={form.control}
-                name="location"
+                name="address"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormControl>
@@ -368,7 +360,7 @@ const CreateServiceForm = ({
   );
 };
 
-const PackageForm = ({ index, form, remove, fields }) => {
+const PackageForm = ({ index, form, remove, fields, types }) => {
   return (
     <>
       <div className="flex flex-col items-stretch gap-4 border border-[--border] bg-neutral-50 p-3 rounded-md">
@@ -405,27 +397,32 @@ const PackageForm = ({ index, form, remove, fields }) => {
 
           <FormField
             control={form.control}
-            name={`packages.${index}.type`}
+            name={`packages.${index}.order_type_id`}
             render={({ field }) => (
               <FormItem className="min-w-24">
                 <FormLabel>ประเภท</FormLabel>
                 <FormControl>
-                  <RadioGroup
-                    onValueChange={field.onChange}
-                    defaultValue={types[0].id}
-                    className="flex flex-col gap-1.5"
-                  >
-                    {types.map((item) => (
-                      <FormItem key={item.id} className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value={item.id} />
-                        </FormControl>
-                        <FormLabel className="font-normal">
-                          {item.name}
-                        </FormLabel>
-                      </FormItem>
-                    ))}
-                  </RadioGroup>
+                  {types.length > 0 ? (
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={types[0].ID}
+                      className="flex flex-col gap-1.5"
+                    >
+                      {types.map((item) => (
+                        <FormItem
+                          key={item.ID}
+                          className="flex items-center space-x-3 space-y-0"
+                        >
+                          <FormControl>
+                            <RadioGroupItem value={item.ID} />
+                          </FormControl>
+                          <FormLabel className="font-normal">
+                            {item.name}
+                          </FormLabel>
+                        </FormItem>
+                      ))}
+                    </RadioGroup>
+                  ) : null}
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -452,9 +449,24 @@ const PackageForm = ({ index, form, remove, fields }) => {
           name={`packages.${index}.description`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>รายการสินค้า</FormLabel>
+              <FormLabel>รายละเอียด</FormLabel>
               <FormControl>
                 <Textarea placeholder="รายละเอียดแพ็กเกจ" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Package Item */}
+        <FormField
+          control={form.control}
+          name={`packages.${index}.item`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>รายการสิ่งของ</FormLabel>
+              <FormControl>
+                <Textarea placeholder="รายการสิ่งของในแพ็กเกจ" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>

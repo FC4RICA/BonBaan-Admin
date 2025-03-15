@@ -19,13 +19,20 @@ import OrderPage from "../pages/OrderPage";
 import { loginAction, loginLoader } from "../routes/loginRoute";
 import { categoriesAction, categoriesLoader } from "../routes/categoriesRoute";
 import { usersLoader } from "../routes/usersRoute";
+import { insertServiceAction, insertSrviceLoader } from "../routes/insertServiceRoute";
+import { ordersAction, ordersLoader } from "../routes/OrdersRoute";
+import { servicesAction, servicesLoader } from "../routes/servicesRoute";
+import ErrorPage from "../pages/ErrorPage";
+import { inboxAction, inboxLoader } from "../routes/inboxRoute";
+import { reviewsLoader } from "../routes/reviewsRoute";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <LoginPage />,
     action: loginAction,
-    loader: loginLoader
+    loader: loginLoader,
+    errorElement: <ErrorPage />
   },
   {
     path: "/logout",
@@ -33,6 +40,7 @@ const router = createBrowserRouter([
   },
   {
     element: <ProtectedRoute />,
+    errorElement: <ErrorPage />,
     children: [
       {
         element: <Layout />,
@@ -47,6 +55,8 @@ const router = createBrowserRouter([
           {
             path: "/inbox",
             element: <InboxPage />,
+            loader: inboxLoader,
+            action: inboxAction,
             handle: {
               crumb: () => "คำขอ",
             },
@@ -59,6 +69,8 @@ const router = createBrowserRouter([
             children: [
               {
                 index: true,
+                loader: ordersLoader,
+                action: ordersAction,
                 element: <OrdersPage />
               },
               {
@@ -79,6 +91,8 @@ const router = createBrowserRouter([
               {
                 index: true,
                 element: <ServicesPage />,
+                loader: servicesLoader,
+                action: servicesAction
               },
               {
                 path: "/services/:id",
@@ -92,6 +106,8 @@ const router = createBrowserRouter([
               {
                 path: "/services/insert",
                 element: <InsertServicePage />,
+                loader: insertSrviceLoader,
+                action: insertServiceAction,
                 handle: {
                   crumb: () => "สร้างบริการใหม่",
                 },
@@ -108,6 +124,7 @@ const router = createBrowserRouter([
               {
                 path: "/services/reviews",
                 element: <ServicesReviewsPage />,
+                loader: reviewsLoader,
                 handle: {
                   crumb: () => "รีวิว",
                 },

@@ -18,52 +18,23 @@ import {
   PaginationLast,
   PaginationPrevious,
 } from "@/components/ui/pagination";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Rating from "../components/shared/Rating";
+import { useReviews } from "../routes/reviewsRoute";
 
-const reviewsData = {
-  data: [
-    {
-      id: "1",
-      username: "supppppp",
-      service: { name: "test" },
-      rating: 3.5,
-      review: "so gooddd",
-      createdAt: new Date(Date.now()).toLocaleString(),
-    },
-    {
-      id: "2",
-      username: "9lnwza007",
-      service: { name: "test" },
-      rating: 4,
-      review: "ดี",
-      createdAt: new Date(Date.now()).toLocaleString(),
-    },
-    {
-      id: "3",
-      username: "prayut",
-      service: { name: "test" },
-      rating: 1,
-      review: "ทำงานช้ามาก ต้องปรับทัศนคติ",
-      createdAt: new Date(Date.now()).toLocaleString(),
-    },
-    {
-      id: "4",
-      username: "Nida",
-      service: { name: "test" },
-      rating: 5,
-      review: "ชอบมาก ได้แฟนตามที่ขอด้วยย",
-      createdAt: new Date(Date.now()).toLocaleString(),
-    },
-  ],
-  totalPage: 1,
-  currentPage: 1,
-  totalRecord: 4,
-  pageSize: 4,
-};
+const PAGE_SIZE = 8;
 
 const ServicesReviewsPage = () => {
+  const result = useReviews();
   const [page, setPage] = useState(1);
+  const totalPage = Math.ceil(result.length / PAGE_SIZE) || 1;
+  const [pageData, setPageData] = useState([]);
+
+  useEffect(() => {
+    const start = PAGE_SIZE * (page - 1);
+    const end = start + PAGE_SIZE;
+    setPageData(result.slice(start, end));
+  }, [page, result]);
 
   return (
     <div className="flex flex-col gap-4">
@@ -72,41 +43,48 @@ const ServicesReviewsPage = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ชื่อผู้ใช้</TableHead>
-              <TableHead>ชื่อบริการ</TableHead>
-              <TableHead>คะแนน</TableHead>
+              <TableHead className="w-52">ชื่อผู้ใช้</TableHead>
+              <TableHead className="w-64">ชื่อบริการ</TableHead>
+              <TableHead className="w-36">คะแนน</TableHead>
               <TableHead>รีวิว</TableHead>
-              <TableHead className="w-48" >วันที่</TableHead>
+              <TableHead className="w-48">วันที่</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {reviewsData.data.map((item, index) => (
+            {pageData.length > 0 ? pageData.map((item, index) => (
               <TableRow key={index}>
-                <TableCell>{item.username}</TableCell>
-                <TableCell>{item.service.name}</TableCell>
+                <TableCell>{item.User.username}</TableCell>
+                <TableCell>{item.Service.name}</TableCell>
                 <TableCell>
                   <Rating value={item.rating} />
                 </TableCell>
-                <TableCell>{item.review}</TableCell>
-                <TableCell>{item.createdAt}</TableCell>
+                <TableCell>{item.detail}</TableCell>
+                <TableCell>{item.CreatedAt}</TableCell>
               </TableRow>
-            ))}
+            )):
+            <TableRow>
+              <TableCell colSpan="5">
+                ไม่พบข้อมูลรีวิว
+              </TableCell>
+            </TableRow>}
           </TableBody>
         </Table>
         <div className="flex justify-between">
           <div className="flex items-center text-sm text-[--gray]">
-            แสดง {reviewsData.data.length} จากทั้งหมด {reviewsData.totalRecord}
+            แสดง {pageData.length} จากทั้งหมด {result.length}
           </div>
           <Pagination>
             <PaginationContent>
               <PaginationItem>
                 <PaginationFirst
-                  isActive={reviewsData.currentPage === 1 ? false : true}
+                  onClick={() => setPage(1)}
+                  isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationPrevious
-                  isActive={reviewsData.currentPage === 1 ? false : true}
+                  onClick={() => setPage((prev) => prev - 1)}
+                  isActive={page === 1 ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
@@ -114,20 +92,14 @@ const ServicesReviewsPage = () => {
               </PaginationItem>
               <PaginationItem>
                 <PaginationNext
-                  isActive={
-                    reviewsData.currentPage === reviewsData.totalPage
-                      ? false
-                      : true
-                  }
+                  onClick={() => setPage((prev) => prev + 1)}
+                  isActive={page === totalPage ? false : true}
                 />
               </PaginationItem>
               <PaginationItem>
                 <PaginationLast
-                  isActive={
-                    reviewsData.currentPage === reviewsData.totalPage
-                      ? false
-                      : true
-                  }
+                  onClick={() => setPage(totalPage)}
+                  isActive={page === totalPage ? false : true}
                 />
               </PaginationItem>
             </PaginationContent>
