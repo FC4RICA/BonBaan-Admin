@@ -1,6 +1,6 @@
 import api from "./axiosInstance"
 
-export const getServices = async (pageSize = 10, currentPage = 1) => {
+export const getServices = async (currentPage = 1, pageSize = 10) => {
   const response = await api.get("/services", {
     params: { pageSize, currentPage },
   });
@@ -13,7 +13,7 @@ export const getService = async (id) => {
 }
 
 export const createService = async (service) => {
-  const response = await api.post("/services", service)
+  const response = await api.post("/services", service, { headers: "multipart/form-data"})  
   return response.data;
 }
 export const deleteService = async (id) => {

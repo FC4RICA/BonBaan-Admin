@@ -38,14 +38,14 @@ const OrdersPage = () => {
     const [page, setPage] = useState(1);
   
     useEffect(() => {
-      if (page === 1) return; // skip first page
+      if (page === 1 && orders != initialOrders) return setOrders(initialOrders)
   
       getCurrentServicesPage();
     }, [page]);
   
     const getCurrentServicesPage = async () => {
-      const response = await getOrders({ currentPage: page });
-      setOrders(response.data.data.orders);
+      const response = await getOrders(page);
+      setOrders(response.data.orders);
     };
   
   return (

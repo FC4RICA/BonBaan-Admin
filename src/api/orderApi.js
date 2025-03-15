@@ -5,14 +5,14 @@ export const getOrder = async (id) => {
   return response.data;
 };
 
-export const getOrders = async (pageSize = 10, currentPage = 1) => {
+export const getOrders = async (currentPage = 1, pageSize = 10, ) => {
   const response = await api.get("/orders", {
     params: { pageSize, currentPage },
   });
   return response.data;
 };
 
-export const getOrdersByStatus = async (id, pageSize = 10, currentPage = 1) => {
+export const getOrdersByStatus = async (id, currentPage = 1, pageSize = 10) => {
   const response = await api.get(`/orders`, {
     params: { status: id, pageSize, currentPage },
   });

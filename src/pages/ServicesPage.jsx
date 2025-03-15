@@ -31,14 +31,14 @@ const ServicesPage = () => {
   const [page, setPage] = useState(1);
 
   useEffect(() => {
-    if (page === 1) return; // skip first page
-
+    if (page === 1 && services != initialServices) return setServices(initialServices)
+    
     getCurrentServicesPage();
   }, [page]);
 
   const getCurrentServicesPage = async () => {
-    const response = await getServices({ currentPage: page });
-    setServices(response.data.data.services);
+    const response = await getServices(page);
+    setServices(response.data.services);
   };
 
   const submit = useSubmit();

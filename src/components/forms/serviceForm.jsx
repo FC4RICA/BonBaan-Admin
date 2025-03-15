@@ -18,23 +18,26 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Trash, X } from "lucide-react";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
-const defaultServiceValues = {
-  name: "",
-  description: "",
-  address: "",
-  packages: [{ name: "", price: "", type: "1", description: "" }],
-  customable: false,
-  images: [],
-  categories: [],
-};
-
 const CreateServiceForm = ({
-  defaultValues = defaultServiceValues,
+  defaultValues,
   submitButtonLabel = "เพิ่มบริการใหม่", // Default for create
   onSubmit,
   categories = [],
   types = [],
 }) => {
+
+  if (!defaultValues) {    
+    defaultValues = {
+      name: "",
+      description: "",
+      address: "",
+      packages: [{ name: "", price: "", order_type_id: types[0]?.ID || "", description: "", item: "" }],
+      custom_package: true,
+      attachments: [],
+      categories: [],
+    }
+  }
+  
   const form = useForm({
     resolver: zodResolver(serviceSchema),
     defaultValues: defaultValues,
@@ -42,7 +45,7 @@ const CreateServiceForm = ({
 
   const fileRef = form.register("file");
   const [existingImages, setExistingImages] = useState(
-    defaultValues.images || []
+    defaultValues.attachments || []
   );
   const [uploadedImages, setUploadedImages] = useState([]);
   const handleImageChange = (event) => {
@@ -56,7 +59,7 @@ const CreateServiceForm = ({
       const newImages = [...uploadedImages, ...previews];
       setUploadedImages(newImages);
       form.setValue(
-        "images",
+        "attachments",
         [...existingImages, ...newImages.map((img) => img.file)],
         { shouldValidate: true }
       );
@@ -75,7 +78,7 @@ const CreateServiceForm = ({
     }
 
     // Update form state to match removed images
-    form.setValue("images", [...newImages.map((img) => img.file)], {
+    form.setValue("attachments", [...newImages.map((img) => img.file)], {
       shouldValidate: true,
     });
   };
@@ -91,23 +94,32 @@ const CreateServiceForm = ({
     formData.append("existingImages", JSON.stringify(existingImages));
 
     uploadedImages.forEach(({ file }) => {
-      formData.append("images", file);
+      formData.append("attachments", file);
     });
 
     Object.keys(values).forEach((key) => {
-      if (key !== "images") {
-        if (key === "packages" || key === "categories") {
-          formData.append(key, JSON.stringify(values[key]));
-        } else {
+      if (key !== "attachments") {
+        if (key === "packages") {
+          values[key].forEach((value) => {
+            value.item = value.item.split("\n");
+          })
+          formData.append(key, JSON.stringify(values[key]))
+        }
+        else if (key === "categories") {
+          values[key].forEach((category) => {
+            formData.append(key, category);
+          });
+        }
+        else {
           formData.append(key, values[key]);
         }
       }
+      console.log(key, values[key]);
     });
-
+    
     if (onSubmit) {
-      onSubmit(values);
+      onSubmit(formData);
     }
-    console.log(values);
   };
 
   return (
@@ -163,7 +175,7 @@ const CreateServiceForm = ({
                   <Button
                     type="button"
                     onClick={() =>
-                      append({ name: "", price: "", description: "" })
+                      append({ name: "", price: "", type: "", description: "" })
                     }
                   >
                     <Plus />
@@ -181,7 +193,7 @@ const CreateServiceForm = ({
             <CollapsibleInput header="ตั้งค่าเพิ่มเติม">
               <FormField
                 control={form.control}
-                name="customable"
+                name="custom_package"
                 render={({ field }) => (
                   <FormItem className="flex flex-row items-center space-x-3 space-y-0">
                     <FormControl>
@@ -233,7 +245,7 @@ const CreateServiceForm = ({
               {/* Images Input */}
               <FormField
                 control={form.control}
-                name="images"
+                name="attachments"
                 render={({ field }) => (
                   <FormItem className="w-full">
                     <FormControl>
@@ -385,7 +397,7 @@ const PackageForm = ({ index, form, remove, fields, types }) => {
 
           <FormField
             control={form.control}
-            name={`packages.${index}.type`}
+            name={`packages.${index}.order_type_id`}
             render={({ field }) => (
               <FormItem className="min-w-24">
                 <FormLabel>ประเภท</FormLabel>
@@ -437,9 +449,24 @@ const PackageForm = ({ index, form, remove, fields, types }) => {
           name={`packages.${index}.description`}
           render={({ field }) => (
             <FormItem>
-              <FormLabel>รายการสินค้า</FormLabel>
+              <FormLabel>รายละเอียด</FormLabel>
               <FormControl>
                 <Textarea placeholder="รายละเอียดแพ็กเกจ" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        {/* Package Item */}
+        <FormField
+          control={form.control}
+          name={`packages.${index}.item`}
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>รายการสิ่งของ</FormLabel>
+              <FormControl>
+                <Textarea placeholder="รายการสิ่งของในแพ็กเกจ" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
