@@ -9,7 +9,7 @@ const InboxPage = () => {
   const submit = useSubmit();
   const handelConfirm = (id, value) => {
     const formData = new FormData();
-    formData.append("intent", "confirm");
+    formData.append("intent", "accept");
     formData.append("id", id);
     formData.append("price", value.price);
 
@@ -34,7 +34,10 @@ const InboxPage = () => {
           onConfirm={(value) => handelConfirm(item.ID, value)}
           onCancel={(value) => handelCancel(item.ID, value)}
         />
-      )): <div>ไม่มีคำขอใหม่</div>}
+      )): 
+      <div className="h-full w-full flex justify-center items-center">
+        <p>ไม่พบคำขอใหม่ :D</p>
+      </div>}
     </div>
   );
 };

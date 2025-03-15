@@ -29,7 +29,7 @@ export const getAllPendingOrders = async () => {
 };
 
 export const acceptCustomOrder = async (id, { price }) => {
-  const response = await api.patch(`/orders/${id}/accept`, { price });
+  const response = await api.post(`/orders/${id}/accept`, { price });
   return response.data;
 };
 
