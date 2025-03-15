@@ -3,13 +3,12 @@ import { getReviews } from "../api/reviewApi";
 
 export const reviewsLoader = async () => {
   const response = await getReviews();
-  // const users = response.data
-  //   .filter((user) => user.Role.role.toLowerCase() === "user")
-  //   .map((user) => ({
-  //     ...user,
-  //     CreatedAt: new Date(user.CreatedAt).toLocaleString(),
-  //   }));
-  return response.data;
+  const reviews = response.data
+    .map((review) => ({
+      ...review,
+      CreatedAt: new Date(review.CreatedAt).toLocaleString(),
+    }));
+  return reviews;
 };
 
 export const useReviews = () => {

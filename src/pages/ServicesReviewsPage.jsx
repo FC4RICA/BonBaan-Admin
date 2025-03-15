@@ -43,9 +43,9 @@ const ServicesReviewsPage = () => {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>ชื่อผู้ใช้</TableHead>
-              <TableHead>ชื่อบริการ</TableHead>
-              <TableHead>คะแนน</TableHead>
+              <TableHead className="w-52">ชื่อผู้ใช้</TableHead>
+              <TableHead className="w-64">ชื่อบริการ</TableHead>
+              <TableHead className="w-36">คะแนน</TableHead>
               <TableHead>รีวิว</TableHead>
               <TableHead className="w-48">วันที่</TableHead>
             </TableRow>
@@ -53,8 +53,8 @@ const ServicesReviewsPage = () => {
           <TableBody>
             {pageData.length > 0 ? pageData.map((item, index) => (
               <TableRow key={index}>
-                <TableCell>{}</TableCell>
-                <TableCell>{item.service_id}</TableCell>
+                <TableCell>{item.User.username}</TableCell>
+                <TableCell>{item.Service.name}</TableCell>
                 <TableCell>
                   <Rating value={item.rating} />
                 </TableCell>
